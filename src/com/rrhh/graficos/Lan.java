@@ -23,7 +23,7 @@ public class Lan {
 		JFrame marco = new JFrame("CRM");            
 		//top,left
 		marco.setLocation(0,0);
-		JOptionPane.showMessageDialog(marco, "Bienvenido","",JOptionPane.DEFAULT_OPTION);
+		//JOptionPane.showMessageDialog(marco, "Bienvenido","",JOptionPane.DEFAULT_OPTION);
 		
 		
 		

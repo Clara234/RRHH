@@ -131,7 +131,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		panelEsteDatos.add(Box.createRigidArea(new Dimension(0,10)));
 		panelEsteDatos.add(l_jefe);
 		panelEsteDatos.add(chb_jefe);
-		panelEsteDatos.setPreferredSize(new Dimension((int)(ancho*0.1), (int)(alto*0.6)));
+		panelEsteDatos.setPreferredSize(new Dimension((int)(ancho*0.1), (int)(alto*0.9)));
 		//panelEsteDatos.setBackground(Color.red);
 		return panelEsteDatos;
 	}
@@ -153,13 +153,13 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		JButton botonActualizar = new JButton("Actualizar");
 		botonActualizar.setForeground(Color.gray);
 		panelEsteControl.add(botonActualizar);
-		JButton botonMusica = new JButton("Activar Musica");
+		/*JButton botonMusica = new JButton("Activar Musica");
 		botonMusica.setForeground(Color.gray);
-		panelEsteControl.add(botonMusica);
+		panelEsteControl.add(botonMusica);*/
 		
 		
 		
-		JCheckBox chb_root = new JCheckBox("Inicio Sesion");
+		JCheckBox chb_root = new JCheckBox("InicioSesion");
 		chb_root.setForeground(Color.gray);
 		chb_root.addActionListener(new ActionListener() {
 
