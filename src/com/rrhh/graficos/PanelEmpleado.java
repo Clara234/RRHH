@@ -32,7 +32,7 @@ import java.util.Vector;
 import java.awt.*;
 
 public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
-	
+	//poner lo de anonimo y eso dx
 	Vector ve;
    Empleado seleccionado;
 	DefaultTableModel dtm;
@@ -139,19 +139,19 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	public JPanel setPanelEsteControl(int alto, int ancho) {
 		JPanel panelEsteControl = new JPanel();
 		panelEsteControl.setLayout( new BoxLayout (panelEsteControl, BoxLayout.Y_AXIS));
-		panelEsteControl.add(Box.createRigidArea(new Dimension(0,10)));
-		panelEsteControl.setPreferredSize(new Dimension((int)(alto*0.09), (int)(ancho*0.01)));
+		panelEsteControl.add(Box.createRigidArea(new Dimension(0,60)));
+		panelEsteControl.setPreferredSize(new Dimension((int)(alto*0.01), (int)(ancho*0.01)));
 		JButton botonConexion = new JButton("Ver");
-		botonConexion.setForeground(Color.gray);
+		botonConexion.setForeground(Color.BLUE);
 		panelEsteControl.add(botonConexion);
 		JButton botonInsertar = new JButton("Insertar");
-		botonInsertar.setForeground(Color.gray);
+		botonInsertar.setForeground(Color.BLUE);
 		panelEsteControl.add(botonInsertar);
 		JButton botonBorrar = new JButton("Borrar");
-		botonBorrar.setForeground(Color.gray);
+		botonBorrar.setForeground(Color.BLUE);
 		panelEsteControl.add(botonBorrar);
 		JButton botonActualizar = new JButton("Actualizar");
-		botonActualizar.setForeground(Color.gray);
+		botonActualizar.setForeground(Color.BLUE);
 		panelEsteControl.add(botonActualizar);
 		/*JButton botonMusica = new JButton("Activar Musica");
 		botonMusica.setForeground(Color.gray);
@@ -160,7 +160,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		
 		
 		JCheckBox chb_root = new JCheckBox("InicioSesion");
-		chb_root.setForeground(Color.gray);
+		chb_root.setForeground(Color.BLUE);
 		chb_root.addActionListener(new ActionListener() {
 
 			@Override
@@ -169,39 +169,42 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 					Dialog dialogo = new JDialog(new JFrame(), true);
 					dialogo.setSize(new Dimension(350, 250));
 					dialogo.setLocation((int)(ancho/2),(int)(alto/4));
-					dialogo.setResizable(false);
+					//dialogo.setResizable(false);
 					JPanel panelDialogo = new JPanel();
 					
-					panelDialogo.setLayout( new BoxLayout (panelDialogo, BoxLayout.X_AXIS));
+					panelDialogo.setLayout( new BoxLayout (panelDialogo,BoxLayout.Y_AXIS));
 					JLabel l_alias = new JLabel("Alias:");
 					JTextField tf_alias = new JTextField();
 					Font f1 = new Font("Garamond", Font.ITALIC, 12);
 					tf_alias.setFont(f1);
-					tf_alias.setMaximumSize(new Dimension(80,20));
+					tf_alias.setMaximumSize(new Dimension(80,30));
 					JLabel l_contrasenna = new JLabel("Contraseña:");
 					JPasswordField tf_contrasenna = new JPasswordField();
 					Font f = new Font("Italic", Font.ITALIC, 12);
 					tf_contrasenna.setFont(f);
-					tf_contrasenna.setMaximumSize(new Dimension(80,20));
+					tf_contrasenna.setMaximumSize(new Dimension(80,30));
 				
 	
 					JButton b_inicio   = new JButton("Iniciar Sesion");
 					Font f3 = new Font("Italic", Font.ITALIC, 12);
 					b_inicio.setFont(f3);
-					b_inicio.setMaximumSize(new Dimension(60,30));
+					
+					b_inicio.setMaximumSize(new Dimension(80,30));
 					
 				//colocar diseño de panel inicio/registro
+
+
 					
 					setVisible(true);
 					
+					dialogo.setTitle("VALIDACION USUARIOS");
+				    JComboBox cb_grupos = new JComboBox();
 					
-					JComboBox cb_grupos = new JComboBox();
-					cb_grupos.addItem("Usuario");
 					cb_grupos.addItem("1");
 					cb_grupos.addItem("2");
 					cb_grupos.addItem("3");
-					cb_grupos.setMaximumSize(new Dimension(90,30));
-					cb_grupos.setLocation(-100,20);
+					cb_grupos.setMaximumSize(new Dimension(70,30));
+					//cb_grupos.setLocation(-100,20);
 					panelDialogo.add(l_alias);
 					panelDialogo.add(tf_alias);
 					panelDialogo.add(l_contrasenna);
@@ -461,18 +464,53 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		@Override
 		public void actionPerformed(ActionEvent e) {
         MisConexiones c1 = null;
-        try {
-			c1 = new MisConexiones();
-			PreparedStatement ps = c1.getPS(ConfigDir.getInstance().getProperty("query3"));
-			ps.setInt(1, seleccionado.getId());
-			ps.executeUpdate();
-			refresh();
-		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+        String box2;
+           
+        	 int resp = JOptionPane.showConfirmDialog(null, "Usted eliminará a este usuario"+"¿Esta seguro?",//<- EL MENSAJE
+        	            "Alerta!"/*<- El título de la ventana*/, JOptionPane.YES_NO_OPTION/*Las opciones (si o no)*/, JOptionPane.WARNING_MESSAGE/*El tipo de ventana, en este caso WARNING*/);
+        	    //Si la respuesta es sí(YES_OPTION)   
+        	    if(resp == JOptionPane.YES_OPTION)
+        	       {
+        	    	
+        	    	try {
+						c1 = new MisConexiones();
+					} catch (InstantiationException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IllegalAccessException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+        			PreparedStatement ps = null;
+					try {
+						ps = c1.getPS(ConfigDir.getInstance().getProperty("query3"));
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+        			try {
+						ps.setInt(1, seleccionado.getId());
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+        			try {
+						ps.executeUpdate();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+        			refresh();
+        		
+        	    	
+        	    	}//El valor de box2 sera 1
+        	    //Si la respuesta es no (NO_OPTION)
+        	    if(resp == JOptionPane.NO_OPTION)
+        	    {box2="0";}//El valor de box2 sera 0
 		}
-			
-    }
 		
     public class gestorActualizar implements ActionListener{
 

@@ -20,19 +20,19 @@ public class Lan {
 
 	}
 	public static void setMarco() {
-		JFrame marco = new JFrame("CRM");            
+		JFrame marco = new JFrame("RRHH");            
 		//top,left
 		marco.setLocation(0,0);
-		//JOptionPane.showMessageDialog(marco, "Bienvenido","",JOptionPane.DEFAULT_OPTION);
+	    JOptionPane.showMessageDialog(marco, "Bienvenido", null, JOptionPane.INFORMATION_MESSAGE);
 		
 		
 		
 		
 		//es abstracta, toolkit no puede crear new, no es instanciable
 		Toolkit tk = Toolkit.getDefaultToolkit();
-		Image imagen = tk.getImage("candy_icon.png");
+		Image imagen = tk.getImage("Z:/iccon.png");
 		marco.setIconImage(imagen);
-		marco.setSize(new Dimension(800,650));
+		marco.setMinimumSize(new Dimension(800,750));
 		//almacenar las dimensiones de la pantalla del usuario
 		Dimension dim=tk.getScreenSize();
 		int anchoM=(int)(dim.width/2), altoM=(int)(dim.height/2);
@@ -42,7 +42,7 @@ public class Lan {
 		JTabbedPane pestanha = new JTabbedPane();
 		pestanha.setForeground(Color.gray);
 		pestanha.add("Directorio cliente", new PanelEmpleado(anchoM, altoM));
-		pestanha.add("Hipotecas", new PanelCliente(anchoM1, altoM1));
+		//pestanha.add("Hipotecas", new PanelCliente(anchoM1, altoM1));
 		//Aqui es donde se visualiza, añadiendolo al marco
 		
 		
@@ -52,9 +52,9 @@ public class Lan {
 		marco.getContentPane().add(pestanha);
 		//imprimir por consola la resolucion de la pantalla
 		System.out.println(dim.width+"px x "+dim.height+"px");
-		//especificamos al programa que finalice cuadno el marco se cierre
+		//especificamos al programa que finalice cuando el marco se cierre
 		marco.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		marco.setMinimumSize(new Dimension(800,650));
+		marco.setMinimumSize(new Dimension(800,750));
 		//Se pon visible al final
 		marco.setVisible(true);
 	}
