@@ -1,4 +1,4 @@
-package com.rrhhpojos;
+package com.rrhh.pojos;
 
 import java.sql.Timestamp;
 
@@ -8,9 +8,10 @@ public class Empleado {
 	private Timestamp fecha_nacimiento;
 	private double salario;
 	private boolean jefe;
-	private int id_departamento, id_puesto;
+	private int id_departamento, id_puesto, id;
 	
-	public Empleado(String nombre, String apellido, Timestamp fecha_nacimiento, Double salario, boolean jefe, int id_departamento, int id_puesto) {
+	public Empleado(int id,String nombre, String apellido, Timestamp fecha_nacimiento, Double salario, boolean jefe, int id_departamento, int id_puesto) {
+		this.id = id;
 		this.nombre = nombre;
 		this.apellido= apellido;
 		this.fecha_nacimiento = fecha_nacimiento;
@@ -18,6 +19,13 @@ public class Empleado {
 		this.jefe = jefe;
 		this.id_departamento = id_departamento;
 		this.id_puesto = id_puesto;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	public String getNombre() {

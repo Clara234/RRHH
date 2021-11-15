@@ -1,7 +1,6 @@
 package com.rrhh.persistencia;
 
 import java.io.InputStream;
-
 import java.util.Properties;
 
 public class ConfigDir {
@@ -41,5 +40,6 @@ public class ConfigDir {
 			// TODO Auto-generated method stub
 			return null;
 		}
+	
 
 }

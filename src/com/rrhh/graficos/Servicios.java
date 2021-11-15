@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import java.util.List;
 
-import com.rrhhpojos.Empleado;
+import com.rrhh.pojos.Empleado;
 
 public interface Servicios {
 	

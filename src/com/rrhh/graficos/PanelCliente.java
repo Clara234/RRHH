@@ -23,8 +23,8 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import com.rrhh.graficos.PanelEmpleado.gestorJefes;
-import com.rrhhpojos.Cliente;
-import com.rrhhpojos.Empleado;
+import com.rrhh.pojos.Cliente;
+import com.rrhh.pojos.Empleado;
 
 public class PanelCliente  extends JPanel implements Servicios{
 	DefaultTableModel dtm;

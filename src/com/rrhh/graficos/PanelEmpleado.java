@@ -1,29 +1,30 @@
 package com.rrhh.graficos;
 
 import javax.print.attribute.standard.Media;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
+import javax.swing.event.MouseInputListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.JTextComponent;
 
 import com.rrhh.auxiliares.DameFecha;
 import com.rrhh.persistencia.ConfigDir;
 import com.rrhh.persistencia.MisConexiones;
-import com.rrhhpojos.Cliente;
-import com.rrhhpojos.Empleado;
+import com.rrhh.pojos.Cliente;
+import com.rrhh.pojos.Empleado;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.lang.NumberFormatException;
@@ -32,18 +33,19 @@ import java.awt.*;
 
 public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	
-	Vector listaEmpleado;
-
+	Vector ve;
+   Empleado seleccionado;
 	DefaultTableModel dtm;
+	JTable tabla;
 	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento;
 	JCheckBox chb_jefe, ch_iniciosesion;
-	//List<Empleado> listaEmpleado = new ArrayList<Empleado>();
+	List<Empleado> listaEmpleados ;
 	public PanelEmpleado(int ancho, int alto) {
 		//disposiciones de los objetos
 		setLayout(new BorderLayout());
 		add(creaPanelNorte(alto,ancho), BorderLayout.NORTH);
 		add(setTabla(alto, ancho), BorderLayout.CENTER);
-		add(setMenuBar(alto, ancho), BorderLayout.NORTH);
+		//add(setMenuBar(alto, ancho), BorderLayout.NORTH);
 		add(setPanelEste(alto, ancho, setPanelEsteDatos(alto, ancho), setPanelEsteControl(ancho, alto)), BorderLayout.EAST);
 	}
 	public JScrollPane setTabla(int alto, int ancho) {
@@ -58,7 +60,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		dtm.addColumn("Fecha nacimiento");
 		dtm.addColumn("Jefe");
 		//se crea una tabla con la configuracion dtm que hemos creado
-		JTable tabla = new JTable(dtm);
+		 tabla = new JTable(dtm);
+		 tabla.addMouseListener(new gestorTabla());
 		//creamos una panel con scroll al que añadirle la tabla que acabamos de crear
 		JScrollPane sp = new JScrollPane(tabla);
 		//damos valores al tamaño del JScrollPane
@@ -153,18 +156,10 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		JButton botonMusica = new JButton("Activar Musica");
 		botonMusica.setForeground(Color.gray);
 		panelEsteControl.add(botonMusica);
-		JLabel l_iniciosesion = new JLabel("Iniciar sesion");
-		l_iniciosesion.setForeground(Color.black);
-		ch_iniciosesion = new JCheckBox();
-		panelEsteControl.add(l_iniciosesion);
-		panelEsteControl.add(ch_iniciosesion);
 		
 		
-		botonConexion.addActionListener(new gestorVer());
-		botonInsertar.addActionListener(new gestorInsertar());
-		botonBorrar.addActionListener(new gestorBorrar());
 		
-		JCheckBox chb_root = new JCheckBox("root");
+		JCheckBox chb_root = new JCheckBox("Inicio Sesion");
 		chb_root.setForeground(Color.gray);
 		chb_root.addActionListener(new ActionListener() {
 
@@ -189,11 +184,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 					tf_contrasenna.setFont(f);
 					tf_contrasenna.setMaximumSize(new Dimension(80,20));
 				
-					JButton b_registro = new JButton("Registrarse");
-					Font f2 = new Font("Italic", Font.ITALIC, 12);
-					b_registro.setFont(f2);
-					b_registro.setMaximumSize(new Dimension(60,30));
-					
+	
 					JButton b_inicio   = new JButton("Iniciar Sesion");
 					Font f3 = new Font("Italic", Font.ITALIC, 12);
 					b_inicio.setFont(f3);
@@ -204,29 +195,23 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 					setVisible(true);
 					
 					
-					JComboBox cb_tipousuario = new JComboBox();
-					cb_tipousuario.addItem("Usuario");
-					cb_tipousuario.addItem("1");
-					cb_tipousuario.addItem("2");
-					cb_tipousuario.addItem("3");
-					cb_tipousuario.setMaximumSize(new Dimension(90,30));
-					cb_tipousuario.setLocation(-100,20);
+					JComboBox cb_grupos = new JComboBox();
+					cb_grupos.addItem("Usuario");
+					cb_grupos.addItem("1");
+					cb_grupos.addItem("2");
+					cb_grupos.addItem("3");
+					cb_grupos.setMaximumSize(new Dimension(90,30));
+					cb_grupos.setLocation(-100,20);
 					panelDialogo.add(l_alias);
 					panelDialogo.add(tf_alias);
 					panelDialogo.add(l_contrasenna);
 					panelDialogo.add(tf_contrasenna);
 					panelDialogo.add(b_inicio);
-					panelDialogo.add(b_registro);
 					panelDialogo.add(Box.createRigidArea(new Dimension(0,10)));
-					panelDialogo.add(cb_tipousuario);
+					panelDialogo.add(cb_grupos);
 					dialogo.add(panelDialogo);
 					
-					if(b_inicio.isSelected()) {
-						//poner que va al panel marco
-					}
-					if(b_registro.isSelected()) {
-						//PONER que el nuevo usuario añadirlo a la base de datos
-					}
+					
 					
 					dialogo.setVisible(true);
 				}
@@ -236,7 +221,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		panelEsteControl.add(botonInsertar);
 		botonInsertar.addActionListener(new gestorInsertar());
 		botonConexion.addActionListener(new gestorVer());
-		
+		//botonMusica.addActionListener(new gestorMusica());
+		//botonActualizar.addActionListener(new gestorActualizar());
 		botonBorrar.addActionListener(new gestorBorrar());
 		panelEsteControl.add(chb_root);
 		//devolvemos el panel de control
@@ -313,7 +299,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	// TODO Auto-generated method stub
 	
 }
-	public JMenuBar setMenuBar(int alto, int ancho) {
+	/*public JMenuBar setMenuBar(int alto, int ancho) {
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setPreferredSize(new Dimension(ancho, (int)(alto*0.045)));
 		JMenu menu = new JMenu("Accesos Rápidos");
@@ -371,53 +357,20 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		menuBar.add(menu);
 		
 		return menuBar;
-	}
+	}*/
 	
 	public class gestorVer implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			//formateamos la tabla para evita que se vean llamadas anteriores a la tabla
-			dtm.setRowCount(0);
-			Empleado empleado;
-        	try {
-        		MisConexiones c;
-        		c = new MisConexiones();
-            	ResultSet rs = c.getRS(ConfigDir.getInstance().getProperty("query1"));
-				while(rs.next()) {
-					empleado = new Empleado(rs.getNString("nombre"),rs.getNString("apellido"),rs.getTimestamp("fecha_nacimiento"),rs.getDouble("salario"),rs.getBoolean("jefe"),rs.getInt("idDepartamento"),rs.getInt("idPuesto"));
-					listaEmpleado  = new Vector();
-				 listaEmpleado.addElement(empleado.getId_departamento());
-				    listaEmpleado.addElement(empleado.getId_puesto());
-					listaEmpleado.addElement(empleado.getNombre());
-					listaEmpleado.addElement(empleado.getApellido());
-					listaEmpleado.addElement(empleado.getSalario());
-					//listaEmpleado.addElement(fechaEsp(empleado.getFecha_nacimiento()));
-					listaEmpleado.addElement(empleado.getFecha_nacimiento());
-					listaEmpleado.addElement(formateoBoolean(empleado.isJefe()));
-					dtm.addRow(listaEmpleado);
-					
-					
-
-				
-			    	   
-			    	
-			  
-				}
-			} catch (Exception e1) {
-				e1.printStackTrace();
-				System.out.println(e1.getMessage());
-			
-
-				
-			}
-		}
-
-		private Object formateoBoolean(boolean jefe) {
 			// TODO Auto-generated method stub
-			return null;
+			refresh();
 		}
+
+		
+		
 	}
+	
 	public class gestorInsertar implements ActionListener{
 		
 		@Override
@@ -438,6 +391,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 					ps.setTimestamp(6,Timestamp.valueOf(tf_fecha_nacimiento.getText()));
 					ps.setBoolean(7, chb_jefe.isSelected());
 					ps.executeUpdate();
+					refresh();
 				
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -445,17 +399,124 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			
 		}
 	}
+	public class gestorTabla implements MouseInputListener{
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+			int j = tabla.getSelectedRow();
+			seleccionado = listaEmpleados.get(j);
+			tf_idDepartamento.setText(""+seleccionado.getId_departamento());
+			tf_idPuesto.setText(""+seleccionado.getId_puesto());
+			tf_nombre.setText(seleccionado.getNombre());
+			tf_apellidos.setText(seleccionado.getApellido());
+			tf_salario.setText(String.valueOf(seleccionado.getSalario()));
+			tf_fecha_nacimiento.setText(String.valueOf(fechaEsp(seleccionado.getFecha_nacimiento())));
+			chb_jefe.setSelected(seleccionado.isJefe());
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		
+	
+	}
+	
 	
 	public class gestorBorrar implements ActionListener{
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-
+        MisConexiones c1 = null;
+        try {
+			c1 = new MisConexiones();
+			PreparedStatement ps = c1.getPS(ConfigDir.getInstance().getProperty("query3"));
+			ps.setInt(1, seleccionado.getId());
+			ps.executeUpdate();
+			refresh();
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 			
     }
 		
+    public class gestorActualizar implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			try {
+				PreparedStatement ps = new MisConexiones().getPS(ConfigDir.getInstance().getProperty("query4"));
+				ps.setInt(1, Integer.valueOf(tf_idDepartamento.getText()));
+				ps.setInt(2, Integer.valueOf(tf_idPuesto.getText()));
+				ps.setString(3, tf_nombre.getText());
+				ps.setString(4, tf_apellidos.getText());
+				ps.setDouble(5, Double.valueOf(tf_salario.getText()));
+				ps.setTimestamp(6,Timestamp.valueOf(fechaIng(tf_fecha_nacimiento.getText())));
+				ps.setBoolean(7, chb_jefe.isSelected());
+				ps.setInt(8, seleccionado.getId());
+				ps.executeUpdate();
+				refresh();
+			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		}
+    	
+    }
 	
-	
+	public String fechaIng(String fechahora) {
+		String fechaIng ="", fecha="", tiempo="", anno="", mes="", dia="", hora="", minuto="", segundo="";
+		StringTokenizer st = new StringTokenizer(fechahora.toString()," ");
+		fecha = st.nextToken();
+		tiempo = st.nextToken();
+		st = new StringTokenizer(fecha.toString(),"-");
+		dia=st.nextToken();
+		mes=st.nextToken();
+		anno=st.nextToken();
+		st = new StringTokenizer(tiempo.toString(),":");
+		hora=st.nextToken();
+		minuto=st.nextToken();
+		segundo=st.nextToken();
+		//no modifico el orden del tiempo pero lo almaceno por si fuese necesario en el futuro
+		fechaIng=anno+"-"+mes+"-"+dia+" "+tiempo;
+		return fechaIng;
+	}
 
 	public String fechaEsp(Timestamp fechahora) {
 		String fechaEsp ="", fecha="", tiempo="", anno="", mes="", dia="", hora="", minuto="", segundo="";
@@ -471,15 +532,49 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		minuto=st.nextToken();
 		segundo=st.nextToken();
 		//no modifico el orden del tiempo pero lo almaceno por si fuese necesario en el futuro
-		fechaEsp=dia+"/"+mes+"/"+anno+" "+tiempo;
+		fechaEsp=dia+"-"+mes+"-"+anno+" "+tiempo;
 		return fechaEsp;
 	}
+	
+	
+	
+	
+	
 	public String formateoBoolean(boolean boo) {
 		String sino="";
 		if(boo == true)sino ="Si";
 		else sino="No";
 		return sino;
 	}
+	
+	public void refresh() {
+		dtm.setRowCount(0);
+		Empleado empleado;
+        try {
+    		MisConexiones c;
+    		c = new MisConexiones();
+    		listaEmpleados = new ArrayList<Empleado>();
+        	ResultSet rs = c.getRS(ConfigDir.getInstance().getProperty("query1"));
+			while(rs.next()) {
+				empleado = new Empleado(rs.getInt("id"),rs.getNString("nombre"),rs.getNString("apellido"),rs.getTimestamp("fecha_nacimiento"),rs.getDouble("salario"),rs.getBoolean("jefe"),rs.getInt("idDepartamento"),rs.getInt("idPuesto"));
+				ve  = new Vector();
+				ve.addElement(empleado.getId_departamento());
+				ve.addElement(empleado.getId_puesto());
+				ve.addElement(empleado.getNombre());
+				ve.addElement(empleado.getApellido());
+				ve.addElement(empleado.getSalario());
+				//listaEmpleado.addElement(fechaEsp(empleado.getFecha_nacimiento()));
+				ve.addElement(empleado.getFecha_nacimiento());
+				ve.addElement(formateoBoolean(empleado.isJefe()));
+				dtm.addRow(ve);
+				listaEmpleados.add(empleado);
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			System.out.println(e1.getMessage());
+		}
+	}
+	
 	
 	public void ejecutarComando(String comando) throws IOException {
 		String[] comandito = new String[] {comando};
@@ -489,36 +584,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		String[] comandito = new String[] {comando1,comando2};
 		final Process proceso = Runtime.getRuntime().exec(comandito);
 	}
-
-
-
-
-	public void addEmpleado(Empleado emp) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public List<Empleado> getAllEmpleados() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Empleado getbyId(int id) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public Empleado updateEmp(Empleado emp) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public void deleteEmp(int id) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-	}
-
 	@Override
 	public void addEmpleado(Empleado emp) throws SQLException {
 		// TODO Auto-generated method stub
@@ -545,12 +610,13 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		
 	}
 
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+
+
+
 }
 	
+
+
 	
 	
 

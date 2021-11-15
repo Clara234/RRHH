@@ -1,4 +1,4 @@
-package com.rrhhpojos;
+package com.rrhh.pojos;
 
 import java.sql.Timestamp;
 public class Cliente {
