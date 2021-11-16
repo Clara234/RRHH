@@ -7,6 +7,7 @@ import javax.sound.sampled.Clip;
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.text.JTextComponent;
 
 import com.rrhh.auxiliares.DameFecha;
@@ -17,6 +18,8 @@ import com.rrhh.pojos.Empleado;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +42,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	JTable tabla;
 	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento;
 	JCheckBox chb_jefe, ch_iniciosesion;
+	TableRowSorter  trsfiltro;
 	List<Empleado> listaEmpleados ;
 	public PanelEmpleado(int ancho, int alto) {
 		//disposiciones de los objetos
@@ -167,7 +171,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			public void actionPerformed(ActionEvent e) {
 				if(chb_root.isSelected()) {
 					Dialog dialogo = new JDialog(new JFrame(), true);
-					dialogo.setSize(new Dimension(350, 250));
+					dialogo.setSize(new Dimension(250, 200));
 					dialogo.setLocation((int)(ancho/2),(int)(alto/4));
 					//dialogo.setResizable(false);
 					JPanel panelDialogo = new JPanel();
@@ -177,32 +181,89 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 					JTextField tf_alias = new JTextField();
 					Font f1 = new Font("Garamond", Font.ITALIC, 12);
 					tf_alias.setFont(f1);
-					tf_alias.setMaximumSize(new Dimension(80,30));
+					tf_alias.setMaximumSize(new Dimension(100,30));
 					JLabel l_contrasenna = new JLabel("Contraseña:");
 					JPasswordField tf_contrasenna = new JPasswordField();
 					Font f = new Font("Italic", Font.ITALIC, 12);
 					tf_contrasenna.setFont(f);
-					tf_contrasenna.setMaximumSize(new Dimension(80,30));
+					tf_contrasenna.setMaximumSize(new Dimension(100,30));
 				
 	
 					JButton b_inicio   = new JButton("Iniciar Sesion");
+					
 					Font f3 = new Font("Italic", Font.ITALIC, 12);
 					b_inicio.setFont(f3);
 					
-					b_inicio.setMaximumSize(new Dimension(80,30));
+					b_inicio.setMaximumSize(new Dimension(130,20));
+					
 					
 				//colocar diseño de panel inicio/registro
-
-
+                      if(b_inicio.isSelected()) { 
+                           
+                        	  
+                    	   JOptionPane.showMessageDialog(dialogo, "Bienvenido");
+                       
+                      }
 					
 					setVisible(true);
+					
+				
+					/*private void inicioSesion {                                            
+
+					
+						   char clave[]=jpassClave.getPassword();
+
+						  
+						   String clavedef=new String(clave);
+
+
+						  //Sección 3
+						  if (txtUsuario.getText().equals("Hola") && clavedef.equals("123")){
+
+						         //S3 línea 1
+						         this.dispose();
+
+						         //S3 línea 2
+						         JOptionPane.showMessageDialog(null, "Bienvenido\n Has ingresado "
+						         + "satisfactoriamente al sistema", "Mensaje de bienvenida",
+						         JOptionPane.INFORMATION_MESSAGE);
+
+						         //S3 línea 3
+						         Formulario1 formformulario1 = new Formulario1();
+
+						         //S3 línea 4
+						         formformulario1.setVisible(true);
+
+
+						   
+						   }else {
+
+
+						          //S3 línea 5
+						          JOptionPane.showMessageDialog(null, "Acceso denegado:\n"
+						          + "Por favor ingrese un usuario y/o contraseña correctos",  
+
+						          "Acceso denegado", JOptionPane.ERROR_MESSAGE);
+						            
+
+						       }
+
+
+						}                                           
+
+						    
+
+					*/
+					
+					
+					
 					
 					dialogo.setTitle("VALIDACION USUARIOS");
 				    JComboBox cb_grupos = new JComboBox();
 					
-					cb_grupos.addItem("1");
+					cb_grupos.addItem("Administrador");
 					cb_grupos.addItem("2");
-					cb_grupos.addItem("3");
+					cb_grupos.addItem("Usuario");
 					cb_grupos.setMaximumSize(new Dimension(70,30));
 					//cb_grupos.setLocation(-100,20);
 					panelDialogo.add(l_alias);
@@ -239,24 +300,67 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		JMenuBar jmb = new JMenuBar();
 		JMenu busquedas = new JMenu("Buscar");
 		JMenuItem jmi1= new JMenuItem("por salarios");
+		jmi1.addActionListener(new ActionListener() {
+      //generar filtro de busqueda por salalrios
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				JTable tabla = new JTable();
+				
+				TableRowSorter trsfiltro;
+			
+				RowFilter.regexFilter(tf_salario.getText(),1);
+		  		tf_salario.addKeyListener(new KeyAdapter(){
+		  			public void keyReleased(final KeyEvent e) {
+		  				String cadena = (tf_salario.getText().toUpperCase());
+		  				tf_salario.setText(cadena);
+		  				repaint();
+		  				
+		  			}
+		  		});
+		  		trsfiltro = new TableRowSorter(tabla.getModel());
+		  		tabla.setRowSorter(trsfiltro);
+			
+			}
+			
+		});
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		JMenuItem jmi2 = new JMenuItem("por jefes");
-        jmi2.addActionListener(new gestorJefes());
+       
 		busquedas.add(jmi1);
 		busquedas.add(jmi1);
 		jmb.add(busquedas);
 		panel.add(jmb);
-		
-		
 		return panel;
 		
-	}
 	
-	public class gestorJefes implements ActionListener{
+		
+		
+		
+	
+	/*public class gestorJefes implements ActionListener{
 	
 
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			borrarTabla();
+			try {
+				borrarTabla();
+			} catch (SQLException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
 			ResultSet rs =null;
 			Empleado emp=null;
 			Vector <Object>v = null;
@@ -288,7 +392,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	
 			
 		
-	}
+	}*/
+  	}
    public JPanel setPanelEste(int alto, int ancho, JPanel p1, JPanel p2) {
 		JPanel panelEste = new JPanel();
 		panelEste.setLayout(new BorderLayout());
@@ -298,69 +403,48 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		return panelEste;
 	}
 	
-	public void borrarTabla() {
+	public void borrarTabla() throws SQLException {
 	// TODO Auto-generated method stub
-	
-}
-	/*public JMenuBar setMenuBar(int alto, int ancho) {
-		JMenuBar menuBar = new JMenuBar();
-		menuBar.setPreferredSize(new Dimension(ancho, (int)(alto*0.045)));
-		JMenu menu = new JMenu("Accesos Rápidos");
-		JMenuItem miCalculadora = new JMenuItem("Calculadora");
-		miCalculadora.setForeground(Color.gray);
-		miCalculadora.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ejecutarComando("calc.exe");
-				
-			}
-
-			private void ejecutarComando(String string) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
-		JMenuItem miNavegador = new JMenuItem("Navegador");
-		miNavegador.setForeground(Color.gray);
-		miNavegador.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ejecutarComando("MicrosoftEdge.exe","www.google.com");
-			}
-
-			private void ejecutarComando(String string, String string2) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
 		
-		JMenuItem copiaBase = new JMenuItem("Base de datos");
-		copiaBase.setForeground(Color.gray);
-		copiaBase.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e)  {
-				
-				try {
-					Process p = new ProcessBuilder("Explorer.exe", "/select,C:\\directory\\selectedFile").start();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-			}
-		});
-		menu.add(miCalculadora);
-		menu.add(miNavegador);
-		menu.add(copiaBase);
-		menuBar.add(menu);
 		
-		return menuBar;
-	}*/
+			try{
+				int numRows = tabla.getRowCount();
+			do{
+			numRows--;
+		deleteEmp(numRows);
+			  }while (numRows>=0) ;
+			}catch(ArrayIndexOutOfBoundsException aiob){
+				System.out.println("en borrar tabla " + aiob.getMessage());
+			}
+			
+		}
+	@Override
+	public void addEmpleado(Empleado emp) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public List<Empleado> getAllEmpleados() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Empleado getbyId(int id) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Empleado updateEmp(Empleado emp) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public void deleteEmp(int id) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 	
 	public class gestorVer implements ActionListener{
 
@@ -622,33 +706,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		String[] comandito = new String[] {comando1,comando2};
 		final Process proceso = Runtime.getRuntime().exec(comandito);
 	}
-	@Override
-	public void addEmpleado(Empleado emp) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public List<Empleado> getAllEmpleados() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Empleado getbyId(int id) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Empleado updateEmp(Empleado emp) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public void deleteEmp(int id) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-
-
 
 
 }
