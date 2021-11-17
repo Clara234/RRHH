@@ -1,6 +1,7 @@
 package com.rrhh.graficos;
 
 import javax.print.attribute.standard.Media;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -21,8 +22,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,16 +48,107 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	JTable tabla;
 	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento;
 	JCheckBox chb_jefe, ch_iniciosesion;
-	TableRowSorter  trsfiltro;
+	TableRowSorter TRSfiltro;
 	List<Empleado> listaEmpleados ;
+	private JTextComponent txtFiltro ;
 	public PanelEmpleado(int ancho, int alto) {
 		//disposiciones de los objetos
 		setLayout(new BorderLayout());
-		add(creaPanelNorte(alto,ancho), BorderLayout.NORTH);
+		add(setMenuBar(alto,ancho),  BorderLayout.NORTH);
+		add(creaPanelNorte(alto,ancho),  BorderLayout.NORTH);
 		add(setTabla(alto, ancho), BorderLayout.CENTER);
 		//add(setMenuBar(alto, ancho), BorderLayout.NORTH);
 		add(setPanelEste(alto, ancho, setPanelEsteDatos(alto, ancho), setPanelEsteControl(ancho, alto)), BorderLayout.EAST);
 	}
+	
+	public JMenuBar setMenuBar(int alto, int ancho) {
+		JMenuBar menuBar = new JMenuBar();
+		JMenu menu = new JMenu("Acessos Rapidos");
+		
+		JMenuItem miCalculadora =  new JMenuItem("Calculadora");
+		miCalculadora.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					ejecutarComando("calc.exe");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			
+		});
+		JMenuItem miNavegador = new JMenuItem("Navegador");
+		miNavegador.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					ejecutarComando("MicrosoftEdge.exe");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			
+		});
+		JMenuItem miCopiaBase = new JMenuItem("Backup");
+		miCopiaBase.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e){
+				// TODO Auto-generated method stub
+				
+				try {
+					creaBackupTablas();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			
+			}
+		});
+		menu.add(miCalculadora);
+		menu.add(miNavegador);
+		menu.add(miCopiaBase);
+		menuBar.add(menu);
+		setVisible(true);
+		return menuBar;
+		
+	}
+	public void creaBackupTablas() throws IOException{
+		  File fbackup = new File("ejercicioregiones.sql");
+	      
+	       String[]command  = new String[] {"cmd.exe", "/c", "mysqldump.exe --quick --lock-tables  --user=root  --password=root   ejercicioregiones"};
+	       
+	       final Process proceso = Runtime.getRuntime().exec(command);
+	       if(proceso != null) {
+	    	    new Thread(new Runnable() {
+	    	    	@Override
+	    	    	public void run() {
+	    	    		try {
+	    	    			try(BufferedReader  reader = new  BufferedReader(new InputStreamReader(new DataInputStream(proceso.getInputStream())));
+	    	    					BufferedWriter writer = new BufferedWriter(new FileWriter(fbackup))){
+	    	    					String line;
+	    	    					while((line = reader.readLine()) !=null) {
+	    	    						writer.write(line+"\n");
+	    	    						writer.newLine();
+	    	    					}
+	    	    				
+	    	    		}
+	    	    		
+	    	    		
+	    	    	}catch(IOException e) {
+	    	    		e.printStackTrace();
+	    	    	}
+	    	    }
+	       }).start();
+	       }
+	}
+	
 	public JScrollPane setTabla(int alto, int ancho) {
 		//objeto previo configurador
 		dtm = new DefaultTableModel();
@@ -171,8 +268,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			public void actionPerformed(ActionEvent e) {
 				if(chb_root.isSelected()) {
 					Dialog dialogo = new JDialog(new JFrame(), true);
-					dialogo.setSize(new Dimension(250, 200));
-					dialogo.setLocation((int)(ancho/2),(int)(alto/4));
+					dialogo.setSize(new Dimension(300, 250));
+					dialogo.setLocation((int)(ancho/5),(int)(alto/3));
 					//dialogo.setResizable(false);
 					JPanel panelDialogo = new JPanel();
 					
@@ -181,12 +278,14 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 					JTextField tf_alias = new JTextField();
 					Font f1 = new Font("Garamond", Font.ITALIC, 12);
 					tf_alias.setFont(f1);
-					tf_alias.setMaximumSize(new Dimension(100,30));
+					l_alias.setMaximumSize(new Dimension(100,20));
+					tf_alias.setMaximumSize(new Dimension(100,20));
 					JLabel l_contrasenna = new JLabel("Contraseña:");
 					JPasswordField tf_contrasenna = new JPasswordField();
 					Font f = new Font("Italic", Font.ITALIC, 12);
 					tf_contrasenna.setFont(f);
-					tf_contrasenna.setMaximumSize(new Dimension(100,30));
+					l_contrasenna.setMaximumSize(new Dimension(100,20));
+					tf_contrasenna.setMaximumSize(new Dimension(100,20));
 				
 	
 					JButton b_inicio   = new JButton("Iniciar Sesion");
@@ -199,10 +298,9 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 					
 				//colocar diseño de panel inicio/registro
                       if(b_inicio.isSelected()) { 
-                           
+                           iniciarSesion();
                         	  
-                    	   JOptionPane.showMessageDialog(dialogo, "Bienvenido");
-                       
+                    
                       }
 					
 					setVisible(true);
@@ -264,15 +362,20 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 					cb_grupos.addItem("Administrador");
 					cb_grupos.addItem("2");
 					cb_grupos.addItem("Usuario");
-					cb_grupos.setMaximumSize(new Dimension(70,30));
+					cb_grupos.setMaximumSize(new Dimension(115,30));
+					
 					//cb_grupos.setLocation(-100,20);
 					panelDialogo.add(l_alias);
 					panelDialogo.add(tf_alias);
 					panelDialogo.add(l_contrasenna);
 					panelDialogo.add(tf_contrasenna);
+					panelDialogo.add(cb_grupos);
 					panelDialogo.add(b_inicio);
 					panelDialogo.add(Box.createRigidArea(new Dimension(0,10)));
-					panelDialogo.add(cb_grupos);
+					
+					
+					
+					
 					dialogo.add(panelDialogo);
 					
 					
@@ -292,58 +395,44 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		//devolvemos el panel de control
 		return panelEsteControl;
 		}
-  	public JPanel creaPanelNorte(int alto, int ancho) {
-		JPanel panel = new JPanel();
-		panel.setLocation(200, 400);
-		panel.setVisible(true);
-		panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+	
+	public void iniciarSesion() {}
+	
+  	public JMenuBar creaPanelNorte(int alto, int ancho) {
+	
 		JMenuBar jmb = new JMenuBar();
+		jmb.setLocation(100,100);
 		JMenu busquedas = new JMenu("Buscar");
 		JMenuItem jmi1= new JMenuItem("por salarios");
 		jmi1.addActionListener(new ActionListener() {
       //generar filtro de busqueda por salalrios
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				JTable tabla = new JTable();
-				
-				TableRowSorter trsfiltro;
-			
-				RowFilter.regexFilter(tf_salario.getText(),1);
-		  		tf_salario.addKeyListener(new KeyAdapter(){
-		  			public void keyReleased(final KeyEvent e) {
-		  				String cadena = (tf_salario.getText().toUpperCase());
-		  				tf_salario.setText(cadena);
-		  				repaint();
-		  				
-		  			}
-		  		});
-		  		trsfiltro = new TableRowSorter(tabla.getModel());
-		  		tabla.setRowSorter(trsfiltro);
+				 filtro();
 			
 			}
-			
+			 
 		});
 		
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		JMenuItem jmi2 = new JMenuItem("por jefes");
+		jmi2.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
        
 		busquedas.add(jmi1);
-		busquedas.add(jmi1);
+		busquedas.add(jmi2);
 		jmb.add(busquedas);
-		panel.add(jmb);
-		return panel;
+		setVisible(true);
+		
+		return jmb;
 		
 	
 		
@@ -658,10 +747,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		return fechaEsp;
 	}
 	
-	
-	
-	
-	
 	public String formateoBoolean(boolean boo) {
 		String sino="";
 		if(boo == true)sino ="Si";
@@ -697,6 +782,22 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		}
 	}
 	
+	public void filtro() {
+		int columnTable = 5;
+		TRSfiltro.setRowFilter(RowFilter.regexFilter(txtFiltro.getText(), columnTable));
+		
+	}
+	private void txtFiltroKeyTyped(final java.awt.event.KeyEvent evt) {
+		txtFiltro.addKeyListener(new KeyAdapter() {
+			public void keyReleased(final KeyEvent e) {
+				String cadena = (txtFiltro.getText());
+				txtFiltro.setText(cadena);
+				filtro();
+			}
+		});
+		TRSfiltro = new TableRowSorter(tabla.getModel());
+		tabla.setRowSorter(TRSfiltro);
+	}
 	
 	public void ejecutarComando(String comando) throws IOException {
 		String[] comandito = new String[] {comando};

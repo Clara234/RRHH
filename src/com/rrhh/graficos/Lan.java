@@ -23,6 +23,7 @@ public class Lan {
 		JFrame marco = new JFrame("RRHH");            
 		//top,left
 		marco.setLocation(0,0);
+		marco.setForeground(Color.PINK);
 	    JOptionPane.showMessageDialog(marco, "Bienvenido", null, JOptionPane.INFORMATION_MESSAGE);
 		
 		
@@ -30,7 +31,7 @@ public class Lan {
 		
 		//es abstracta, toolkit no puede crear new, no es instanciable
 		Toolkit tk = Toolkit.getDefaultToolkit();
-		Image imagen = tk.getImage("Z:/iccon.png");
+		Image imagen = tk.getImage("icon.png");
 		marco.setIconImage(imagen);
 		marco.setMinimumSize(new Dimension(800,750));
 		//almacenar las dimensiones de la pantalla del usuario
