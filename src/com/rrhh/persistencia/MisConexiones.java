@@ -54,5 +54,17 @@ public class MisConexiones {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
+	public PreparedStatement damePSValUsu(String sentencia, String parametro, String parametro2, int grupo) throws SQLException{
+		this.parametro=parametro;
+		this.parametro2= parametro2;
+		this.sentencia = sentencia;
+		ps= getConexion().prepareStatement(sentencia);
+		ps.setString(1, parametro);
+		ps.setString(2,parametro2);
+		ps.setInt(3, grupo);
+		return ps;
+	}
 
 }

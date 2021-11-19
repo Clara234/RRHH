@@ -14,6 +14,7 @@ import javax.swing.text.JTextComponent;
 import com.rrhh.auxiliares.DameFecha;
 import com.rrhh.persistencia.ConfigDir;
 import com.rrhh.persistencia.MisConexiones;
+import com.rrhh.persistencia.ValUsuarios;
 import com.rrhh.pojos.Cliente;
 import com.rrhh.pojos.Empleado;
 
@@ -47,18 +48,25 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	DefaultTableModel dtm;
 	JTable tabla;
 	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento;
-	JCheckBox chb_jefe, ch_iniciosesion, chb_root;
+	public JButton botonConexion,botonInsertar,botonBorrar,botonActualizar;
+	
+	JCheckBox chb_jefe, chb_root;
 	TableRowSorter TRSfiltro;
 	List<Empleado> listaEmpleados;
 	private JTextComponent txtFiltro;
+	public JDialog dialogoinicial;
+	public JComboBox<Object> combo;
+	public JPasswordField clave;
+	public JTextField mialias;
+	public JLabel etiqueta;
+
 
 	public PanelEmpleado(int ancho, int alto) {
 		// disposiciones de los objetos
 		setLayout(new BorderLayout());
 		add(setMenuBar(alto, ancho), BorderLayout.NORTH);
 		add(setTabla(alto, ancho), BorderLayout.CENTER);
-		add(setPanelEste(alto, ancho, setPanelEsteDatos(alto, ancho), setPanelEsteControl(ancho, alto)),
-				BorderLayout.EAST);
+		add(setPanelEste(alto, ancho, setPanelEsteDatos(alto, ancho), setPanelEsteControl(ancho, alto)),BorderLayout.EAST);
 	}
 
 	public JMenuBar setMenuBar(int alto, int ancho) {
@@ -129,7 +137,12 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+                           gestorJefes();
+			}
 
+			private void gestorJefes() {
+				// TODO Auto-generated method stub
+				
 			}
 
 		});
@@ -149,7 +162,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	public void creaBackupTablas() throws IOException {
 		File fbackup = new File("ejercicioregiones.sql");
 
-		String[] command = new String[] { "cmd.exe", "/c",
+		Object[] command = new Object[] { "cmd.exe", "/c",
 				"mysqldump.exe --quick --lock-tables  --user=root  --password=root   ejercicioregiones" };
 
 		final Process proceso = Runtime.getRuntime().exec(command);
@@ -161,7 +174,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 						try (BufferedReader reader = new BufferedReader(
 								new InputStreamReader(new DataInputStream(proceso.getInputStream())));
 								BufferedWriter writer = new BufferedWriter(new FileWriter(fbackup))) {
-							String line;
+							Object line;
 							while ((line = reader.readLine()) != null) {
 								writer.write(line + "\n");
 								writer.newLine();
@@ -262,7 +275,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		panelEsteDatos.add(l_jefe);
 		panelEsteDatos.add(chb_jefe);
 		panelEsteDatos.setPreferredSize(new Dimension((int) (ancho * 0.1), (int) (alto * 0.9)));
-		
+
 		return panelEsteDatos;
 	}
 
@@ -286,177 +299,60 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 		chb_root = new JCheckBox("InicioSesion");
 		chb_root.setForeground(Color.BLUE);
-		chb_root.addActionListener(new ActionListener() {
+		chb_root.addActionListener(new gestorEdicion());
+		
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (chb_root.isSelected()) {
-					Dialog dialogo = new JDialog(new JFrame(), true);
-					dialogo.setSize(new Dimension(300, 250));
-					dialogo.setLocation((int) (ancho / 5), (int) (alto / 3));
-					JPanel panelDialogo = new JPanel();
+			
+		
+			
 
-					panelDialogo.setLayout(new BoxLayout(panelDialogo, BoxLayout.Y_AXIS));
-					JLabel l_alias = new JLabel("Alias:");
-					JTextField tf_alias = new JTextField();
-					Font f1 = new Font("Garamond", Font.ITALIC, 12);
-					tf_alias.setFont(f1);
-					l_alias.setMaximumSize(new Dimension(100, 20));
-					tf_alias.setMaximumSize(new Dimension(100, 20));
-					JLabel l_contrasenna = new JLabel("Contraseña:");
-					JPasswordField tf_contrasenna = new JPasswordField();
-					Font f = new Font("Italic", Font.ITALIC, 12);
-					tf_contrasenna.setFont(f);
-					l_contrasenna.setMaximumSize(new Dimension(100, 20));
-					tf_contrasenna.setMaximumSize(new Dimension(100, 20));
+			
 
-					JButton b_inicio = new JButton("Iniciar Sesion");
-					b_inicio.addActionListener(new ActionListener(){
-
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							//crear un rersulset que te devuelva todos los usuarios con ese alias + esa contraseña + ese grupo
-							//si el resultset esta vacio es que ese usuario + contrs + grupo no existe
-							//si el result set no esta vacio, si existe --> if(rs.next()){Login correcto}else{Usuario no encontado}
-							ResultSet rs = new ResultSet();
-							
-							if(rs.next()) {
-								Login correcto;
-							}else {
-								JOptionPane.showMessageDialog(b_inicio, "No existe el usuario");
-							}
-						}
-						
-					});
-
-					Font f3 = new Font("Italic", Font.ITALIC, 12);
-					b_inicio.setFont(f3);
-
-					b_inicio.setMaximumSize(new Dimension(130, 20));
-
-					// colocar diseño de panel inicio/registro
-				
-
-					setVisible(true);
-
-					/*
-					 * private void inicioSesion {
-					 * 
-					 * 
-					 * char clave[]=jpassClave.getPassword();
-					 * 
-					 * 
-					 * String clavedef=new String(clave);
-					 * 
-					 * 
-					 * //Sección 3 if (txtUsuario.getText().equals("Hola") &&
-					 * clavedef.equals("123")){
-					 * 
-					 * //S3 línea 1 this.dispose();
-					 * 
-					 * //S3 línea 2 JOptionPane.showMessageDialog(null,
-					 * "Bienvenido\n Has ingresado " + "satisfactoriamente al sistema",
-					 * "Mensaje de bienvenida", JOptionPane.INFORMATION_MESSAGE);
-					 * 
-					 * //S3 línea 3 Formulario1 formformulario1 = new Formulario1();
-					 * 
-					 * //S3 línea 4 formformulario1.setVisible(true);
-					 * 
-					 * 
-					 * 
-					 * }else {
-					 * 
-					 * 
-					 * //S3 línea 5 JOptionPane.showMessageDialog(null, "Acceso denegado:\n" +
-					 * "Por favor ingrese un usuario y/o contraseña correctos",
-					 * 
-					 * "Acceso denegado", JOptionPane.ERROR_MESSAGE);
-					 * 
-					 * 
-					 * }
-					 * 
-					 * 
-					 * }
-					 * 
-					 * 
-					 * 
-					 */
-
-					dialogo.setTitle("VALIDACION USUARIOS");
-					JComboBox cb_grupos = new JComboBox();
-
-					cb_grupos.addItem("Administrador");
-					cb_grupos.addItem("Avanzado");
-					cb_grupos.addItem("Usuario");
-					cb_grupos.setMaximumSize(new Dimension(115, 30));
-
-				
-					panelDialogo.add(l_alias);
-					panelDialogo.add(tf_alias);
-					panelDialogo.add(l_contrasenna);
-					panelDialogo.add(tf_contrasenna);
-					panelDialogo.add(cb_grupos);
-					panelDialogo.add(b_inicio);
-					panelDialogo.add(Box.createRigidArea(new Dimension(0, 10)));
-
-					dialogo.add(panelDialogo);
-
-					dialogo.setVisible(true);
-				}
-			}
-
-		});
-		panelEsteControl.add(botonInsertar);
+		
+		
 		botonInsertar.addActionListener(new gestorInsertar());
 		botonConexion.addActionListener(new gestorVer());
-	    botonActualizar.addActionListener(new gestorActualizar());
+		botonActualizar.addActionListener(new gestorActualizar());
 		botonBorrar.addActionListener(new gestorBorrar());
 		panelEsteControl.add(chb_root);
 		// devolvemos el panel de control
 		return panelEsteControl;
 	}
 
-	public class Login  {
-		//crear Login aqui
-		
-		MisConexiones c = new MisConexiones();
-		ptr
-		
-	}
 
-	
-		/*
-		 * public class gestorJefes implements ActionListener{
-		 * 
-		 * 
-		 * public void actionPerformed(ActionEvent e) { // TODO Auto-generated method
-		 * stub try { borrarTabla(); } catch (SQLException e2) { // TODO Auto-generated
-		 * catch block e2.printStackTrace(); } ResultSet rs =null; Empleado emp=null;
-		 * Vector <Object>v = null; try { // rs = new
-		 * MisConexiones().dameResultSetSimple(ConfigDir.getInstance().getProperty(
-		 * "consultaJefes")); while(rs.next()) {
-		 * 
-		 * emp.setId_puesto(rs.getInt("Id puesto"));
-		 * emp.setId_departamento(rs.getInt("Id departamento"));
-		 * emp.setNombre(rs.getString("Nombre"));
-		 * emp.setApellido(rs.getString("Apellido"));
-		 * emp.setFecha_nacimiento(rs.getTimestamp("Fecha"));
-		 * 
-		 * emp.setSalario(rs.getDouble("Salario")); emp.setJefe(rs.getBoolean("Jefe"));
-		 * v.addElement(emp.getId_puesto()); v.addElement(emp.getId_departamento());
-		 * v.addElement(emp.getNombre()); v.addElement(emp.getApellido());
-		 * v.addElement(emp.getSalario()); v.addElement(new
-		 * DameFecha().dameTime(emp.getFecha_nacimiento()));
-		 * v.addElement(ConfigDir.getInstance().getReverso(emp.isJefe()));
-		 * 
-		 * dtm.addRow(v); } }catch(Exception e1) {e1.printStackTrace();} }
-		 * 
-		 * 
-		 * 
-		 * 
-		 * }
-		 */
-	
+
+
+	/*
+	 * public class gestorJefes implements ActionListener{
+	 * 
+	 * 
+	 * public void actionPerformed(ActionEvent e) { // TODO Auto-generated method
+	 * stub try { borrarTabla(); } catch (SQLException e2) { // TODO Auto-generated
+	 * catch block e2.printStackTrace(); } ResultSet rs =null; Empleado emp=null;
+	 * Vector <Object>v = null; try { // rs = new
+	 * MisConexiones().dameResultSetSimple(ConfigDir.getInstance().getProperty(
+	 * "consultaJefes")); while(rs.next()) {
+	 * 
+	 * emp.setId_puesto(rs.getInt("Id puesto"));
+	 * emp.setId_departamento(rs.getInt("Id departamento"));
+	 * emp.setNombre(rs.getString("Nombre"));
+	 * emp.setApellido(rs.getString("Apellido"));
+	 * emp.setFecha_nacimiento(rs.getTimestamp("Fecha"));
+	 * 
+	 * emp.setSalario(rs.getDouble("Salario")); emp.setJefe(rs.getBoolean("Jefe"));
+	 * v.addElement(emp.getId_puesto()); v.addElement(emp.getId_departamento());
+	 * v.addElement(emp.getNombre()); v.addElement(emp.getApellido());
+	 * v.addElement(emp.getSalario()); v.addElement(new
+	 * DameFecha().dameTime(emp.getFecha_nacimiento()));
+	 * v.addElement(ConfigDir.getInstance().getReverso(emp.isJefe()));
+	 * 
+	 * dtm.addRow(v); } }catch(Exception e1) {e1.printStackTrace();} }
+	 * 
+	 * 
+	 * 
+	 * 
+	 * }
+	 */
 
 	public JPanel setPanelEste(int alto, int ancho, JPanel p1, JPanel p2) {
 		JPanel panelEste = new JPanel();
@@ -562,8 +458,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			tf_idPuesto.setText("" + seleccionado.getId_puesto());
 			tf_nombre.setText(seleccionado.getNombre());
 			tf_apellidos.setText(seleccionado.getApellido());
-			tf_salario.setText(String.valueOf(seleccionado.getSalario()));
-			tf_fecha_nacimiento.setText(String.valueOf(fechaEsp(seleccionado.getFecha_nacimiento())));
+			tf_salario.setText(Object.valueOf(seleccionado.getSalario()));
+			tf_fecha_nacimiento.setText(Object.valueOf(fechaEsp(seleccionado.getFecha_nacimiento())));
 			chb_jefe.setSelected(seleccionado.isJefe());
 		}
 
@@ -610,7 +506,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MisConexiones c1 = null;
-			String box2;
+			Object box2;
 
 			int resp = JOptionPane.showConfirmDialog(null, "Usted eliminará a este usuario" + "¿Esta seguro?", // <- EL
 																												// MENSAJE
@@ -653,16 +549,14 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 				refresh();
 
 			} // El valor de box2 sera 1
-			// Si la respuesta es no (NO_OPTION)
+				// Si la respuesta es no (NO_OPTION)
 			if (resp == JOptionPane.NO_OPTION) {
 				box2 = "0";
 			} // El valor de box2 sera 0
 		}
 
-		
-
 	}
-	
+
 	public class gestorActualizar implements ActionListener {
 
 		@Override
@@ -687,8 +581,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		}
 	}
 
-	public String fechaIng(String fechahora) {
-		String fechaIng = "", fecha = "", tiempo = "", anno = "", mes = "", dia = "", hora = "", minuto = "",
+	public Object fechaIng(Object fechahora) {
+		Object fechaIng = "", fecha = "", tiempo = "", anno = "", mes = "", dia = "", hora = "", minuto = "",
 				segundo = "";
 		StringTokenizer st = new StringTokenizer(fechahora.toString(), " ");
 		fecha = st.nextToken();
@@ -707,8 +601,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		return fechaIng;
 	}
 
-	public String fechaEsp(Timestamp fechahora) {
-		String fechaEsp = "", fecha = "", tiempo = "", anno = "", mes = "", dia = "", hora = "", minuto = "",
+	public Object fechaEsp(Timestamp fechahora) {
+		Object fechaEsp = "", fecha = "", tiempo = "", anno = "", mes = "", dia = "", hora = "", minuto = "",
 				segundo = "";
 		StringTokenizer st = new StringTokenizer(fechahora.toString(), " ");
 		fecha = st.nextToken();
@@ -727,8 +621,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		return fechaEsp;
 	}
 
-	public String formateoBoolean(boolean boo) {
-		String sino = "";
+	public Object formateoBoolean(boolean boo) {
+		Object sino = "";
 		if (boo == true)
 			sino = "Si";
 		else
@@ -737,6 +631,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	}
 
 	public void refresh() {
+
 		dtm.setRowCount(0);
 		Empleado empleado;
 		try {
@@ -775,7 +670,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	private void txtFiltroKeyTyped(final java.awt.event.KeyEvent evt) {
 		txtFiltro.addKeyListener(new KeyAdapter() {
 			public void keyReleased(final KeyEvent e) {
-				String cadena = (txtFiltro.getText());
+				Object cadena = (txtFiltro.getText());
 				txtFiltro.setText(cadena);
 				filtro();
 			}
@@ -784,14 +679,157 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		tabla.setRowSorter(TRSfiltro);
 	}
 
-	public void ejecutarComando(String comando) throws IOException {
-		String[] comandito = new String[] { comando };
+	public void ejecutarComando(Object comando) throws IOException {
+		Object[] comandito = new Object[] { comando };
 		final Process proceso = Runtime.getRuntime().exec(comandito);
 	}
 
-	public void ejecutarComando(String comando1, String comando2) throws IOException {
-		String[] comandito = new String[] { comando1, comando2 };
+	public void ejecutarComando(Object comando1, Object comando2) throws IOException {
+		Object[] comandito = new Object[] { comando1, comando2 };
 		final Process proceso = Runtime.getRuntime().exec(comandito);
+	}
+	
+	
+// private MiPractica veamos;
+	public class gestorEdicion implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+
+			if (chb_root.isSelected()) {
+				dialogoinicial = new JDialog(new JFrame(), true);
+				dialogoinicial.setResizable(false);
+				dialogoinicial.setBackground(new Color(206, 238, 244));
+				dialogoinicial.setForeground(new Color(206, 237, 244));
+
+				dialogoinicial.getContentPane().setLayout(new GridLayout(1, 1));
+				dialogoinicial.setTitle("VALIDACION USUARIOS");
+				combo = new JComboBox<Object>();
+				combo.addItem(dameObjeto("1"));
+				combo.addItem(dameObjeto("2"));
+				combo.addItem(dameObjeto("3"));
+
+				clave = new JPasswordField(20);
+				dialogoinicial.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				mialias = new JTextField(20);
+
+				etiqueta = new JLabel("INTRODUZCA SU CONTRASEÑA");
+				etiqueta.setFont(new Font("Dialog", Font.BOLD, 14));
+				JPanel panelentrada = new JPanel();
+				panelentrada.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
+
+				panelentrada.add(new JLabel(""));
+				panelentrada.add(new JLabel("GRUPOS"));
+				panelentrada.add(combo);
+				panelentrada.add(new JLabel("Introduzca tu  alias"));
+				panelentrada.add(mialias);
+
+				panelentrada.add(etiqueta);
+				//panelentrada.add("");
+				panelentrada.add(new JLabel("  copyright by Clara"));
+				
+				panelentrada.add(new JLabel("  "));
+
+				panelentrada.setSize(250, 250);
+				panelentrada.setBackground(new Color(209, 222, 244));
+				panelentrada.setForeground(new Color(209, 222, 224));
+
+				clave.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e)  {
+						
+						Object controlaG = combo.getSelectedItem().toString();
+						int j = new Integer(controlaG).intValue();
+						Object atrapaAl = mialias.getText();
+
+						Object password = Object.copyValueOf(clave.getPassword());
+
+						boolean flag = false;
+						int n = 0;
+
+						try {
+
+							ValUsuarios valUsu = new ValUsuarios();
+
+							switch (j) {
+
+							case 1:
+								flag = valUsu.validar(atrapaAl,password, j);
+								if (flag) {
+									editHabCosas(j);
+									n = JOptionPane.showConfirmDialog(new JDialog(), "Dese dar de alta alguno?","Usuarios", JOptionPane.YES_NO_OPTION);
+									if (n == JOptionPane.YES_OPTION) {
+										// veamos = new MiPractica();
+										dialogoinicial.dispose();
+									}
+
+									else if (n == JOptionPane.NO_OPTION) {
+										dialogoinicial.dispose();
+									}
+								}
+								break;
+
+							case 2:
+								flag = valUsu.validar(atrapaAl,password, j);
+								if (flag) {
+									System.out.println("correcto usuario grupo 2");
+									editHabCosas(j);
+
+								}
+								break;
+
+							case 3:
+								flag = valUsu.validar(atrapaAl,password , j);
+								if (flag) {
+									System.out.println("correcto usuario grupo 3");
+									editHabCosas(j);
+									
+									dialogoinicial.dispose();
+
+								}
+								break;
+								default:
+									System.out.println("VETE A SABER");
+
+							}
+
+						} catch (ClassNotFoundException | SQLException e1) {e1.printStackTrace();}
+					}
+
+				});
+
+			}
+
+		}
+
+	}
+
+	private Object dameObjeto(final String item) {
+		return new Object() {
+			public String toString() {
+				return item;
+			}
+		};
+	}
+
+	public void editHabCosas(int grado) {
+		switch (grado) {
+		case 1:
+			refresh();
+			System.out.println("Administrador");
+			break;
+		case 2:
+			refresh();
+			
+			System.out.println("Avanzado");
+			//botonConexion.setEnable(true);
+			
+			break;
+		case 3:
+			refresh();
+			botonConexion.setEnabled(true);
+			System.out.println("Usuario");
+			break;
+
+		}
+
 	}
 
 }
