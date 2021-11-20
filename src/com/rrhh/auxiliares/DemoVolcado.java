@@ -33,7 +33,7 @@ public class DemoVolcado {
        
            			
        		}
-       		ps = con.prepareStatement("UPDATE empleados set jefe=true where jefe is null");
+       		ps = con.prepareStatement("UPDATE empleados set jefe=false where jefe is null");
                ps.execute();
        		
        

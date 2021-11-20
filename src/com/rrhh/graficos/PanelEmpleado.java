@@ -2,6 +2,8 @@ package com.rrhh.graficos;
 
 import javax.print.attribute.standard.Media;
 
+
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -11,10 +13,11 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.JTextComponent;
 
+import com.rrhh.auxiliares.Auxiliar;
+//import com.rrhh.auxiliares.CreaBackupTablas;
 import com.rrhh.auxiliares.DameFecha;
 import com.rrhh.persistencia.ConfigDir;
 import com.rrhh.persistencia.MisConexiones;
-import com.rrhh.persistencia.ValUsuarios;
 import com.rrhh.pojos.Cliente;
 import com.rrhh.pojos.Empleado;
 
@@ -43,12 +46,13 @@ import java.awt.*;
 
 public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
-	Vector ve;
+	Vector v;
 	Empleado seleccionado;
+	//Empleado emp;
 	DefaultTableModel dtm;
 	JTable tabla;
 	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento;
-	public JButton botonConexion,botonInsertar,botonBorrar,botonActualizar;
+	public JButton botonConexion,botonInsertar,botonBorrar,botonActualizar ;//cambiar botonConexion=botonVer
 	
 	JCheckBox chb_jefe, chb_root;
 	TableRowSorter TRSfiltro;
@@ -109,19 +113,25 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-
+				
 				try {
 					creaBackupTablas();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-
+			
 			}
+
+			
+
+		
+
+			
 		});
 		JMenu busquedas = new JMenu("Buscar");
-		JMenuItem jmi1 = new JMenuItem("por salarios");
-		jmi1.addActionListener(new ActionListener() {
+		JMenuItem salario = new JMenuItem("por salarios");
+		salario.addActionListener(new ActionListener() {
 			// generar filtro de busqueda por salalrios
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -131,8 +141,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 		});
 
-		JMenuItem jmi2 = new JMenuItem("por jefes");
-		jmi2.addActionListener(new ActionListener() {
+		JMenuItem jefes = new JMenuItem("por jefes");
+		jefes.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -147,8 +157,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 		});
 
-		busquedas.add(jmi1);
-		busquedas.add(jmi2);
+		busquedas.add(salario);
+		busquedas.add(jefes);
 		menu.add(miCalculadora);
 		menu.add(miNavegador);
 		menu.add(miCopiaBase);
@@ -158,11 +168,59 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		return menuBar;
 
 	}
+	
+	
+
+
+	public class gestorJefes implements ActionListener{
+		  
+			 
+			 public void actionPerformed(ActionEvent e) { 
+		             // TODO Auto-generated method
+			   try {
+		             borrarTabla();
+		           } catch (SQLException e2) { 
+		            // TODO Auto-generated
+			         e2.printStackTrace(); 
+		        } 
+		      //  ResultSet rs =null; 
+		       Empleado emp=null;
+			Vector v=null;
+		        try { 
+		      ResultSet  rs = new  MisConexiones().dameResultSetSimple(ConfigDir.getInstance().getProperty("consultaJefes"));
+		       while(rs.next()) {
+			  
+			  emp.setId_puesto(rs.getInt("Id puesto"));
+			  emp.setId_departamento(rs.getInt("Id departamento"));
+			  emp.setNombre(rs.getString("Nombre"));
+			 emp.setApellido(rs.getString("Apellido"));
+			 emp.setFecha_nacimiento(rs.getTimestamp("Fecha"));
+			 
+			 emp.setSalario(rs.getDouble("Salario")); emp.setJefe(rs.getBoolean("Jefe"));
+			 v.addElement(emp.getId_puesto()); v.addElement(emp.getId_departamento());
+			 v.addElement(emp.getNombre()); v.addElement(emp.getApellido());
+			 v.addElement(emp.getSalario()); v.addElement(new
+			 DameFecha().dameTime(emp.getFecha_nacimiento()));
+			 v.addElement(ConfigDir.getInstance().getReverso(emp.isJefe()));
+			 
+			 dtm.addRow(v);
+		          }
+		         }catch(Exception e1)
+		         {e1.printStackTrace();
+		          }
+		            }
+			 
+			 
+			 
+			 
+			 }
+			
+//clase para crear copia de la base de datos ejercicio regiones
 
 	public void creaBackupTablas() throws IOException {
 		File fbackup = new File("ejercicioregiones.sql");
 
-		Object[] command = new Object[] { "cmd.exe", "/c",
+		String[] command = new String[] { "cmd.exe", "/c",
 				"mysqldump.exe --quick --lock-tables  --user=root  --password=root   ejercicioregiones" };
 
 		final Process proceso = Runtime.getRuntime().exec(command);
@@ -301,6 +359,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		chb_root.setForeground(Color.BLUE);
 		chb_root.addActionListener(new gestorEdicion());
 		
+		
 
 			
 		
@@ -322,37 +381,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 
 
-	/*
-	 * public class gestorJefes implements ActionListener{
-	 * 
-	 * 
-	 * public void actionPerformed(ActionEvent e) { // TODO Auto-generated method
-	 * stub try { borrarTabla(); } catch (SQLException e2) { // TODO Auto-generated
-	 * catch block e2.printStackTrace(); } ResultSet rs =null; Empleado emp=null;
-	 * Vector <Object>v = null; try { // rs = new
-	 * MisConexiones().dameResultSetSimple(ConfigDir.getInstance().getProperty(
-	 * "consultaJefes")); while(rs.next()) {
-	 * 
-	 * emp.setId_puesto(rs.getInt("Id puesto"));
-	 * emp.setId_departamento(rs.getInt("Id departamento"));
-	 * emp.setNombre(rs.getString("Nombre"));
-	 * emp.setApellido(rs.getString("Apellido"));
-	 * emp.setFecha_nacimiento(rs.getTimestamp("Fecha"));
-	 * 
-	 * emp.setSalario(rs.getDouble("Salario")); emp.setJefe(rs.getBoolean("Jefe"));
-	 * v.addElement(emp.getId_puesto()); v.addElement(emp.getId_departamento());
-	 * v.addElement(emp.getNombre()); v.addElement(emp.getApellido());
-	 * v.addElement(emp.getSalario()); v.addElement(new
-	 * DameFecha().dameTime(emp.getFecha_nacimiento()));
-	 * v.addElement(ConfigDir.getInstance().getReverso(emp.isJefe()));
-	 * 
-	 * dtm.addRow(v); } }catch(Exception e1) {e1.printStackTrace();} }
-	 * 
-	 * 
-	 * 
-	 * 
-	 * }
-	 */
 
 	public JPanel setPanelEste(int alto, int ancho, JPanel p1, JPanel p2) {
 		JPanel panelEste = new JPanel();
@@ -458,8 +486,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			tf_idPuesto.setText("" + seleccionado.getId_puesto());
 			tf_nombre.setText(seleccionado.getNombre());
 			tf_apellidos.setText(seleccionado.getApellido());
-			tf_salario.setText(Object.valueOf(seleccionado.getSalario()));
-			tf_fecha_nacimiento.setText(Object.valueOf(fechaEsp(seleccionado.getFecha_nacimiento())));
+			tf_salario.setText(""+seleccionado.getSalario());
+			tf_fecha_nacimiento.setText(""+seleccionado.getFecha_nacimiento());
 			chb_jefe.setSelected(seleccionado.isJefe());
 		}
 
@@ -569,7 +597,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 				ps.setString(3, tf_nombre.getText());
 				ps.setString(4, tf_apellidos.getText());
 				ps.setDouble(5, Double.valueOf(tf_salario.getText()));
-				ps.setTimestamp(6, Timestamp.valueOf(fechaIng(tf_fecha_nacimiento.getText())));
+				ps.setTimestamp(6, Timestamp.valueOf(tf_fecha_nacimiento.getText()));
 				ps.setBoolean(7, chb_jefe.isSelected());
 				ps.setInt(8, seleccionado.getId());
 				ps.executeUpdate();
@@ -581,8 +609,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		}
 	}
 
-	public Object fechaIng(Object fechahora) {
-		Object fechaIng = "", fecha = "", tiempo = "", anno = "", mes = "", dia = "", hora = "", minuto = "",
+	public String fechaIng(String fechahora) {
+		String fechaIng = "", fecha = "", tiempo = "", anno = "", mes = "", dia = "", hora = "", minuto = "",
 				segundo = "";
 		StringTokenizer st = new StringTokenizer(fechahora.toString(), " ");
 		fecha = st.nextToken();
@@ -601,8 +629,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		return fechaIng;
 	}
 
-	public Object fechaEsp(Timestamp fechahora) {
-		Object fechaEsp = "", fecha = "", tiempo = "", anno = "", mes = "", dia = "", hora = "", minuto = "",
+	public String fechaEsp(Timestamp fechahora) {
+		String fechaEsp = "", fecha = "", tiempo = "", anno = "", mes = "", dia = "", hora = "", minuto = "",
 				segundo = "";
 		StringTokenizer st = new StringTokenizer(fechahora.toString(), " ");
 		fecha = st.nextToken();
@@ -621,8 +649,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		return fechaEsp;
 	}
 
-	public Object formateoBoolean(boolean boo) {
-		Object sino = "";
+	public String formateoBoolean(boolean boo) {
+		String sino = "";
 		if (boo == true)
 			sino = "Si";
 		else
@@ -643,16 +671,16 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 				empleado = new Empleado(rs.getInt("id"), rs.getNString("nombre"), rs.getNString("apellido"),
 						rs.getTimestamp("fecha_nacimiento"), rs.getDouble("salario"), rs.getBoolean("jefe"),
 						rs.getInt("idDepartamento"), rs.getInt("idPuesto"));
-				ve = new Vector();
-				ve.addElement(empleado.getId_departamento());
-				ve.addElement(empleado.getId_puesto());
-				ve.addElement(empleado.getNombre());
-				ve.addElement(empleado.getApellido());
-				ve.addElement(empleado.getSalario());
+				v = new Vector();
+				v.addElement(empleado.getId_departamento());
+				v.addElement(empleado.getId_puesto());
+				v.addElement(empleado.getNombre());
+				v.addElement(empleado.getApellido());
+				v.addElement(empleado.getSalario());
 				// listaEmpleado.addElement(fechaEsp(empleado.getFecha_nacimiento()));
-				ve.addElement(empleado.getFecha_nacimiento());
-				ve.addElement(formateoBoolean(empleado.isJefe()));
-				dtm.addRow(ve);
+				v.addElement(empleado.getFecha_nacimiento());
+				v.addElement(formateoBoolean(empleado.isJefe()));
+				dtm.addRow(v);
 				listaEmpleados.add(empleado);
 			}
 		} catch (Exception e1) {
@@ -670,8 +698,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	private void txtFiltroKeyTyped(final java.awt.event.KeyEvent evt) {
 		txtFiltro.addKeyListener(new KeyAdapter() {
 			public void keyReleased(final KeyEvent e) {
-				Object cadena = (txtFiltro.getText());
-				txtFiltro.setText(cadena);
+				String cadena = (txtFiltro.getText());
 				filtro();
 			}
 		});
@@ -679,13 +706,13 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		tabla.setRowSorter(TRSfiltro);
 	}
 
-	public void ejecutarComando(Object comando) throws IOException {
-		Object[] comandito = new Object[] { comando };
+	public void ejecutarComando(String comando) throws IOException {
+		String[] comandito = new String[] {comando};
 		final Process proceso = Runtime.getRuntime().exec(comandito);
 	}
 
-	public void ejecutarComando(Object comando1, Object comando2) throws IOException {
-		Object[] comandito = new Object[] { comando1, comando2 };
+	public void ejecutarComando(String comando1, String comando2) throws IOException {
+		String[] comandito = new String[] { comando1, comando2 };
 		final Process proceso = Runtime.getRuntime().exec(comandito);
 	}
 	
@@ -695,102 +722,124 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		public void actionPerformed(ActionEvent e) {
 
 			if (chb_root.isSelected()) {
+				
 				dialogoinicial = new JDialog(new JFrame(), true);
 				dialogoinicial.setResizable(false);
 				dialogoinicial.setBackground(new Color(206, 238, 244));
 				dialogoinicial.setForeground(new Color(206, 237, 244));
+				dialogoinicial.setSize(250,250);
+				dialogoinicial.setMinimumSize(new Dimension(250,250));
+				dialogoinicial.setLocation(250,250);
 
-				dialogoinicial.getContentPane().setLayout(new GridLayout(1, 1));
+				//dialogoinicial.getContentPane().setLayout(new GridLayout(1, 1));
+	
+				
+				dialogoinicial.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				mialias = new JTextField(16);
+				clave = new JPasswordField(16);
 				dialogoinicial.setTitle("VALIDACION USUARIOS");
 				combo = new JComboBox<Object>();
 				combo.addItem(dameObjeto("1"));
 				combo.addItem(dameObjeto("2"));
 				combo.addItem(dameObjeto("3"));
 
-				clave = new JPasswordField(20);
-				dialogoinicial.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				mialias = new JTextField(20);
-
-				etiqueta = new JLabel("INTRODUZCA SU CONTRASEÑA");
-				etiqueta.setFont(new Font("Dialog", Font.BOLD, 14));
+				
+				dialogoinicial.add(mialias);
+				dialogoinicial.add(clave);
+				dialogoinicial.add(combo);
 				JPanel panelentrada = new JPanel();
 				panelentrada.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
 
-				panelentrada.add(new JLabel(""));
-				panelentrada.add(new JLabel("GRUPOS"));
-				panelentrada.add(combo);
-				panelentrada.add(new JLabel("Introduzca tu  alias"));
+			
+				
+				panelentrada.add(new JLabel("Introduzca su  alias"));
 				panelentrada.add(mialias);
-
-				panelentrada.add(etiqueta);
-				//panelentrada.add("");
+				panelentrada.add(new JLabel("Introduzca su contraseña"));
+				panelentrada.add(clave);
+				panelentrada.add(new JLabel("    GRUPOS"));
+				panelentrada.add(combo);
 				panelentrada.add(new JLabel("  copyright by Clara"));
 				
-				panelentrada.add(new JLabel("  "));
+			
 
 				panelentrada.setSize(250, 250);
 				panelentrada.setBackground(new Color(209, 222, 244));
 				panelentrada.setForeground(new Color(209, 222, 224));
-
+				dialogoinicial.add(panelentrada);
+               dialogoinicial.setVisible(true);
+               panelentrada.setVisible(true);
+           
+		
 				clave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e)  {
 						
-						Object controlaG = combo.getSelectedItem().toString();
-						int j = new Integer(controlaG).intValue();
-						Object atrapaAl = mialias.getText();
+						
+						//Object atrapaAl = mialias.getText();
+                      
+						String password = Auxiliar.dameContrasenna((clave.getPassword()));
 
-						Object password = Object.copyValueOf(clave.getPassword());
-
-						boolean flag = false;
+						//boolean flag = false;
 						int n = 0;
 
 						try {
 
-							ValUsuarios valUsu = new ValUsuarios();
+							PreparedStatement ps = new MisConexiones().getPS(ConfigDir.getInstance().getProperty("validacionUsu"));
+							ps.setString(1, mialias.getText());
+							ps.setString(2, Auxiliar.dameContrasenna(clave.getPassword()));
+							ps.setInt(3, combo.getSelectedIndex()+1);
+							ResultSet rs = ps.executeQuery();
+							if(rs.next()) {
+								int j = rs.getInt("grupos");
+								switch (j) {
 
-							switch (j) {
-
-							case 1:
-								flag = valUsu.validar(atrapaAl,password, j);
-								if (flag) {
-									editHabCosas(j);
-									n = JOptionPane.showConfirmDialog(new JDialog(), "Dese dar de alta alguno?","Usuarios", JOptionPane.YES_NO_OPTION);
-									if (n == JOptionPane.YES_OPTION) {
-										// veamos = new MiPractica();
-										dialogoinicial.dispose();
-									}
-
-									else if (n == JOptionPane.NO_OPTION) {
-										dialogoinicial.dispose();
-									}
-								}
-								break;
-
-							case 2:
-								flag = valUsu.validar(atrapaAl,password, j);
-								if (flag) {
-									System.out.println("correcto usuario grupo 2");
-									editHabCosas(j);
-
-								}
-								break;
-
-							case 3:
-								flag = valUsu.validar(atrapaAl,password , j);
-								if (flag) {
-									System.out.println("correcto usuario grupo 3");
-									editHabCosas(j);
+								case 1:
 									
-									dialogoinicial.dispose();
+										editHabCosas(j);
+										n = JOptionPane.showConfirmDialog(new JDialog(), "Dese dar de alta alguno?","Usuarios", JOptionPane.YES_NO_OPTION);
+										if (n == JOptionPane.YES_OPTION) {
+											// veamos = new MiPractica();
+											dialogoinicial.dispose();
+										}
+
+										else if (n == JOptionPane.NO_OPTION) {
+											dialogoinicial.dispose();
+										}
+									
+									break;
+
+								case 2:
+									
+									
+										System.out.println("correcto usuario grupo 2");
+										editHabCosas(j);
+										
+										dialogoinicial.dispose();
+
+									
+									break;
+
+								case 3:
+								
+									
+										System.out.println("correcto usuario grupo 3");
+										editHabCosas(j);
+										
+										dialogoinicial.dispose();
+
+									
+									break;
+									default:
+										System.out.println("VETE A SABER");
 
 								}
-								break;
-								default:
-									System.out.println("VETE A SABER");
-
+								
+							} else {
+								JOptionPane.showMessageDialog(null, "Ese usuario no existe, puto");
 							}
+							
+							
 
-						} catch (ClassNotFoundException | SQLException e1) {e1.printStackTrace();}
+						} catch (ClassNotFoundException | SQLException | InstantiationException | IllegalAccessException e1) {e1.printStackTrace();}
 					}
 
 				});
@@ -798,6 +847,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			}
 
 		}
+	
+		
 
 	}
 
@@ -814,18 +865,30 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		case 1:
 			refresh();
 			System.out.println("Administrador");
+			botonConexion.setEnabled(true);
+			botonInsertar.setEnabled(true);
+			botonBorrar.setEnabled(true);
+			botonActualizar.setEnabled(true);
+			tf_idDepartamento.setEditable(true);
+			tf_idPuesto.setEditable(true);
+			tf_nombre.setEditable(true);
+			tf_apellidos.setEditable(true);
+			tf_salario.setEditable(true);
+			tf_fecha_nacimiento.setEditable(true);
+			
 			break;
 		case 2:
 			refresh();
 			
 			System.out.println("Avanzado");
-			//botonConexion.setEnable(true);
+			botonConexion.setEnabled(true);
+			botonInsertar.setEnabled(true);
 			
 			break;
 		case 3:
 			refresh();
 			botonConexion.setEnabled(true);
-			System.out.println("Usuario");
+			System.out.println("Usuario basico");
 			break;
 
 		}
