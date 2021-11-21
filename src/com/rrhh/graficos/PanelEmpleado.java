@@ -4,6 +4,7 @@ import javax.print.attribute.standard.Media;
 
 
 
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -52,7 +53,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	DefaultTableModel dtm;
 	JTable tabla;
 	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento;
-	public JButton botonConexion,botonInsertar,botonBorrar,botonActualizar ;//cambiar botonConexion=botonVer
+	public JButton botonVer,botonInsertar,botonBorrar,botonActualizar ,botonAcceder;//cambiar botonConexion=botonVer
 	
 	JCheckBox chb_jefe, chb_root;
 	TableRowSorter TRSfiltro;
@@ -71,6 +72,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		add(setMenuBar(alto, ancho), BorderLayout.NORTH);
 		add(setTabla(alto, ancho), BorderLayout.CENTER);
 		add(setPanelEste(alto, ancho, setPanelEsteDatos(alto, ancho), setPanelEsteControl(ancho, alto)),BorderLayout.EAST);
+		editHabCosas(0);
 	}
 
 	public JMenuBar setMenuBar(int alto, int ancho) {
@@ -265,7 +267,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		// creamos una panel con scroll al que añadirle la tabla que acabamos de crear
 		JScrollPane sp = new JScrollPane(tabla);
 		// damos valores al tamaño del JScrollPane
-		sp.setPreferredSize(new Dimension((int) (ancho * 0.8), (int) (alto * 0.8)));
+		sp.setPreferredSize(new Dimension((int) (ancho * 0.8), (int) (alto * 1.2)));
 		// devolvemos el panel scroll con todo lo que hemos creado dentro
 		return sp;
 	}
@@ -332,7 +334,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		panelEsteDatos.add(Box.createRigidArea(new Dimension(0, 10)));
 		panelEsteDatos.add(l_jefe);
 		panelEsteDatos.add(chb_jefe);
-		panelEsteDatos.setPreferredSize(new Dimension((int) (ancho * 0.1), (int) (alto * 0.9)));
+		panelEsteDatos.setPreferredSize(new Dimension((int) (ancho * 0.1), (int) (alto *1.1)));
 
 		return panelEsteDatos;
 	}
@@ -340,18 +342,18 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	public JPanel setPanelEsteControl(int alto, int ancho) {
 		JPanel panelEsteControl = new JPanel();
 		panelEsteControl.setLayout(new BoxLayout(panelEsteControl, BoxLayout.Y_AXIS));
-		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 60)));
+		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 5)));
 		panelEsteControl.setPreferredSize(new Dimension((int) (alto * 0.01), (int) (ancho * 0.01)));
-		JButton botonConexion = new JButton("Ver");
-		botonConexion.setForeground(Color.BLUE);
-		panelEsteControl.add(botonConexion);
-		JButton botonInsertar = new JButton("Insertar");
+		botonVer = new JButton("Ver");
+		botonVer.setForeground(Color.BLUE);
+		panelEsteControl.add(botonVer);
+		botonInsertar = new JButton("Insertar");
 		botonInsertar.setForeground(Color.BLUE);
 		panelEsteControl.add(botonInsertar);
-		JButton botonBorrar = new JButton("Borrar");
+		botonBorrar = new JButton("Borrar");
 		botonBorrar.setForeground(Color.BLUE);
 		panelEsteControl.add(botonBorrar);
-		JButton botonActualizar = new JButton("Actualizar");
+		botonActualizar = new JButton("Actualizar");
 		botonActualizar.setForeground(Color.BLUE);
 		panelEsteControl.add(botonActualizar);
 
@@ -359,18 +361,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		chb_root.setForeground(Color.BLUE);
 		chb_root.addActionListener(new gestorEdicion());
 		
-		
-
-			
-		
-			
-
-			
-
-		
-		
 		botonInsertar.addActionListener(new gestorInsertar());
-		botonConexion.addActionListener(new gestorVer());
+		botonVer.addActionListener(new gestorVer());
 		botonActualizar.addActionListener(new gestorActualizar());
 		botonBorrar.addActionListener(new gestorBorrar());
 		panelEsteControl.add(chb_root);
@@ -695,16 +687,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 	}
 
-	private void txtFiltroKeyTyped(final java.awt.event.KeyEvent evt) {
-		txtFiltro.addKeyListener(new KeyAdapter() {
-			public void keyReleased(final KeyEvent e) {
-				String cadena = (txtFiltro.getText());
-				filtro();
-			}
-		});
-		TRSfiltro = new TableRowSorter(tabla.getModel());
-		tabla.setRowSorter(TRSfiltro);
-	}
 
 	public void ejecutarComando(String comando) throws IOException {
 		String[] comandito = new String[] {comando};
@@ -730,10 +712,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 				dialogoinicial.setSize(250,250);
 				dialogoinicial.setMinimumSize(new Dimension(250,250));
 				dialogoinicial.setLocation(250,250);
-
-				//dialogoinicial.getContentPane().setLayout(new GridLayout(1, 1));
-	
-				
 				dialogoinicial.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				mialias = new JTextField(16);
 				clave = new JPasswordField(16);
@@ -742,11 +720,41 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 				combo.addItem(dameObjeto("1"));
 				combo.addItem(dameObjeto("2"));
 				combo.addItem(dameObjeto("3"));
+				botonAcceder = new JButton("Acceder");
 
-				
+				botonAcceder.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e)  {
+						
+						try {
+							
+							PreparedStatement ps = new MisConexiones().getPS(ConfigDir.getInstance().getProperty("validacionUsu"));
+							ps.setString(1, mialias.getText());
+							ps.setString(2, Auxiliar.dameContrasenna(clave.getPassword()));
+							ps.setInt(3, combo.getSelectedIndex()+1);
+							ResultSet rs = ps.executeQuery();
+							if(rs.next()) {
+								editHabCosas(rs.getInt("grupo"));
+								dialogoinicial.dispose();
+							} else {
+								JOptionPane.showMessageDialog(null, "Ese usuario no existe, puto");
+							}
+							
+							
+
+						} catch (Exception e1) {e1.printStackTrace();}
+					
+					}
+
+				});
+
+			
+				botonAcceder.setForeground(Color.pink);
+
+				dialogoinicial.add(botonAcceder);
 				dialogoinicial.add(mialias);
 				dialogoinicial.add(clave);
 				dialogoinicial.add(combo);
+				
 				JPanel panelentrada = new JPanel();
 				panelentrada.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
 
@@ -760,6 +768,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 				panelentrada.add(combo);
 				panelentrada.add(new JLabel("  copyright by Clara"));
 				
+				panelentrada.add(botonAcceder);
+				
 			
 
 				panelentrada.setSize(250, 250);
@@ -770,82 +780,10 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
                panelentrada.setVisible(true);
            
 		
-				clave.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e)  {
-						
-						
-						//Object atrapaAl = mialias.getText();
-                      
-						String password = Auxiliar.dameContrasenna((clave.getPassword()));
-
-						//boolean flag = false;
-						int n = 0;
-
-						try {
-
-							PreparedStatement ps = new MisConexiones().getPS(ConfigDir.getInstance().getProperty("validacionUsu"));
-							ps.setString(1, mialias.getText());
-							ps.setString(2, Auxiliar.dameContrasenna(clave.getPassword()));
-							ps.setInt(3, combo.getSelectedIndex()+1);
-							ResultSet rs = ps.executeQuery();
-							if(rs.next()) {
-								int j = rs.getInt("grupos");
-								switch (j) {
-
-								case 1:
-									
-										editHabCosas(j);
-										n = JOptionPane.showConfirmDialog(new JDialog(), "Dese dar de alta alguno?","Usuarios", JOptionPane.YES_NO_OPTION);
-										if (n == JOptionPane.YES_OPTION) {
-											// veamos = new MiPractica();
-											dialogoinicial.dispose();
-										}
-
-										else if (n == JOptionPane.NO_OPTION) {
-											dialogoinicial.dispose();
-										}
-									
-									break;
-
-								case 2:
-									
-									
-										System.out.println("correcto usuario grupo 2");
-										editHabCosas(j);
-										
-										dialogoinicial.dispose();
-
-									
-									break;
-
-								case 3:
-								
-									
-										System.out.println("correcto usuario grupo 3");
-										editHabCosas(j);
-										
-										dialogoinicial.dispose();
-
-									
-									break;
-									default:
-										System.out.println("VETE A SABER");
-
-								}
-								
-							} else {
-								JOptionPane.showMessageDialog(null, "Ese usuario no existe, puto");
-							}
-							
-							
-
-						} catch (ClassNotFoundException | SQLException | InstantiationException | IllegalAccessException e1) {e1.printStackTrace();}
-					}
-
-				});
-
+			} else {
+				chb_root.setSelected(false);
+				editHabCosas(0);
 			}
-
 		}
 	
 		
@@ -863,9 +801,19 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	public void editHabCosas(int grado) {
 		switch (grado) {
 		case 1:
+			editHabCosas(0);
 			refresh();
+			int n = JOptionPane.showConfirmDialog(new JDialog(), "Dese dar de alta alguno?","Usuarios", JOptionPane.YES_NO_OPTION);
+			if (n == JOptionPane.YES_OPTION) {
+				// veamos = new MiPractica();
+				dialogoinicial.dispose();
+			}
+
+			else if (n == JOptionPane.NO_OPTION) {
+				dialogoinicial.dispose();
+			}
 			System.out.println("Administrador");
-			botonConexion.setEnabled(true);
+			botonVer.setEnabled(true);
 			botonInsertar.setEnabled(true);
 			botonBorrar.setEnabled(true);
 			botonActualizar.setEnabled(true);
@@ -878,17 +826,32 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			
 			break;
 		case 2:
+			editHabCosas(0);
 			refresh();
 			
 			System.out.println("Avanzado");
-			botonConexion.setEnabled(true);
+			botonVer.setEnabled(true);
 			botonInsertar.setEnabled(true);
 			
 			break;
 		case 3:
+			editHabCosas(0);
 			refresh();
-			botonConexion.setEnabled(true);
+			botonVer.setEnabled(true);
 			System.out.println("Usuario basico");
+			break;
+		case 0:
+			dtm.setRowCount(0);
+			botonVer.setEnabled(false);
+			botonInsertar.setEnabled(false);
+			botonBorrar.setEnabled(false);
+			botonActualizar.setEnabled(false);
+			tf_idDepartamento.setEditable(false);
+			tf_idPuesto.setEditable(false);
+			tf_nombre.setEditable(false);
+			tf_apellidos.setEditable(false);
+			tf_salario.setEditable(false);
+			tf_fecha_nacimiento.setEditable(false);
 			break;
 
 		}

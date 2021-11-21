@@ -43,7 +43,7 @@ public class Lan {
 		JTabbedPane pestanha = new JTabbedPane();
 		pestanha.setForeground(Color.gray);
 		pestanha.add("Empleado", new PanelEmpleado(anchoM, altoM));
-		pestanha.add("Usuario", new PanelUsuario());
+		pestanha.add("Usuario", new PanelUsuario(anchoM1, altoM1));
 		//Aqui es donde se visualiza, añadiendolo al marco
 		
 		

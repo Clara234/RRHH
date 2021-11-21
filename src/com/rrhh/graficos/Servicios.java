@@ -15,5 +15,6 @@ public interface Servicios {
     public Empleado getbyId(int id)throws SQLException;//get uno
     public Empleado updateEmp(Empleado emp)throws SQLException;//PUT(actualizado)
     public void deleteEmp(int id)throws SQLException;// delete
+    
 
 }
