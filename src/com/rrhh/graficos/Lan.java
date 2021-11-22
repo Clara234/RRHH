@@ -26,7 +26,7 @@ public class Lan {
 		marco.setForeground(Color.PINK);
 	    JOptionPane.showMessageDialog(marco, "Bienvenido", null, JOptionPane.INFORMATION_MESSAGE);
 		
-		
+	    Toolkit.getDefaultToolkit().beep();
 		
 		
 		//es abstracta, toolkit no puede crear new, no es instanciable
@@ -42,8 +42,8 @@ public class Lan {
 		//crear pestañas dentro del panel:
 		JTabbedPane pestanha = new JTabbedPane();
 		pestanha.setForeground(Color.gray);
-		pestanha.add("Empleado", new PanelEmpleado(anchoM, altoM));
-		pestanha.add("Usuario", new PanelUsuario(anchoM1, altoM1));
+		pestanha.add("Empleados", new PanelEmpleado(anchoM, altoM));
+		pestanha.add("Usuarios", new PanelUsuario(anchoM1, altoM1));
 		//Aqui es donde se visualiza, añadiendolo al marco
 		
 		

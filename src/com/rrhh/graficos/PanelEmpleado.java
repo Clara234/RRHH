@@ -5,6 +5,7 @@ import javax.print.attribute.standard.Media;
 
 
 
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -137,7 +138,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			// generar filtro de busqueda por salalrios
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				filtro();
+				
 
 			}
 
@@ -174,49 +175,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	
 
 
-	public class gestorJefes implements ActionListener{
-		  
-			 
-			 public void actionPerformed(ActionEvent e) { 
-		             // TODO Auto-generated method
-			   try {
-		             borrarTabla();
-		           } catch (SQLException e2) { 
-		            // TODO Auto-generated
-			         e2.printStackTrace(); 
-		        } 
-		      //  ResultSet rs =null; 
-		       Empleado emp=null;
-			Vector v=null;
-		        try { 
-		      ResultSet  rs = new  MisConexiones().dameResultSetSimple(ConfigDir.getInstance().getProperty("consultaJefes"));
-		       while(rs.next()) {
-			  
-			  emp.setId_puesto(rs.getInt("Id puesto"));
-			  emp.setId_departamento(rs.getInt("Id departamento"));
-			  emp.setNombre(rs.getString("Nombre"));
-			 emp.setApellido(rs.getString("Apellido"));
-			 emp.setFecha_nacimiento(rs.getTimestamp("Fecha"));
-			 
-			 emp.setSalario(rs.getDouble("Salario")); emp.setJefe(rs.getBoolean("Jefe"));
-			 v.addElement(emp.getId_puesto()); v.addElement(emp.getId_departamento());
-			 v.addElement(emp.getNombre()); v.addElement(emp.getApellido());
-			 v.addElement(emp.getSalario()); v.addElement(new
-			 DameFecha().dameTime(emp.getFecha_nacimiento()));
-			 v.addElement(ConfigDir.getInstance().getReverso(emp.isJefe()));
-			 
-			 dtm.addRow(v);
-		          }
-		         }catch(Exception e1)
-		         {e1.printStackTrace();
-		          }
-		            }
-			 
-			 
-			 
-			 
-			 }
-			
+
 //clase para crear copia de la base de datos ejercicio regiones
 
 	public void creaBackupTablas() throws IOException {
@@ -398,35 +357,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 	}
 
-	@Override
-	public void addEmpleado(Empleado emp) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public List<Empleado> getAllEmpleados() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Empleado getbyId(int id) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Empleado updateEmp(Empleado emp) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void deleteEmp(int id) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 	public class gestorVer implements ActionListener {
 
@@ -442,10 +373,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// empleado emp = new Empleado();
-			// Emp.setNombre(txtNombre.getText());
-			// addEmpleado(emp);
-			// MisConexiones c = new MisConexiones();
+			
 
 			try {
 				MisConexiones c = new MisConexiones();
@@ -681,11 +609,11 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		}
 	}
 
-	public void filtro() {
+	/*public void filtro() {
 		int columnTable = 5;
 		TRSfiltro.setRowFilter(RowFilter.regexFilter(txtFiltro.getText(), columnTable));
 
-	}
+	}*/
 
 
 	public void ejecutarComando(String comando) throws IOException {
@@ -855,6 +783,36 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			break;
 
 		}
+
+	}
+	
+	@Override
+	public void addEmpleado(Empleado emp) throws SQLException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public List<Empleado> getAllEmpleados() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Empleado getbyId(int id) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Empleado updateEmp(Empleado emp) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteEmp(int id) throws SQLException {
+		// TODO Auto-generated method stub
 
 	}
 

@@ -4,13 +4,22 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -18,11 +27,16 @@ import javax.swing.JTextField;
 import javax.swing.event.MouseInputListener;
 import javax.swing.table.DefaultTableModel;
 
+import com.rrhh.persistencia.ConfigDir;
+import com.rrhh.persistencia.MisConexiones;
+import com.rrhh.pojos.Empleado;
 import com.rrhh.pojos.Usuario;
 
-public class PanelUsuario extends JPanel {
+public class PanelUsuario extends JPanel  implements Servicios2{
 	DefaultTableModel dtm;
 	Usuario seleccionado;
+	Vector v;
+	Usuario usuario;
 	
 	JTable tabla;
 	JTextField  tf_nombre, tf_apellido, tf_alias, tf_clave, tf_fecha_entrada, tf_grupo;
@@ -148,10 +162,10 @@ public class PanelUsuario extends JPanel {
 		
 		
 		
-		/*botonInsertar.addActionListener(new gestorInsertar());
+		botonInsertar.addActionListener(new gestorInsertar());
 		botonVer.addActionListener(new gestorVer());
 		botonActualizar.addActionListener(new gestorActualizar());
-		botonBorrar.addActionListener(new gestorBorrar());*/
+		botonBorrar.addActionListener(new gestorBorrar());
 		
        
 		
@@ -160,6 +174,151 @@ public class PanelUsuario extends JPanel {
 		return panelEsteControl;
 	}
 	
+	public class gestorInsertar implements ActionListener{
+		
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+
+			try {
+				MisConexiones c = new MisConexiones();
+				PreparedStatement ps = c.getPS(ConfigDir.getInstance().getProperty("query6"));
+				ps.setString(1, tf_nombre.getText());
+				ps.setString(2, tf_apellido.getText());
+				ps.setString(3, tf_alias.getText());
+				ps.setString(4, tf_clave.getText());
+				ps.setTimestamp(5, Timestamp.valueOf(tf_fecha_entrada.getText()));
+				ps.setInt(6, Integer.valueOf(tf_grupo.getText()));
+				ps.executeUpdate();
+				refresh();
+
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+
+		}
+		
+	}
+	
+	public class gestorVer implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			refresh();
+		}
+		
+	}
+	
+	public class gestorBorrar implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			MisConexiones c1 = null;
+			Object box2;
+
+			int resp = JOptionPane.showConfirmDialog(null, "Usted eliminará a este usuario" + "¿Esta seguro?", // <- EL
+																												// MENSAJE
+					"Alerta!"/* <- El título de la ventana */, JOptionPane.YES_NO_OPTION/* Las opciones (si o no) */,
+					JOptionPane.WARNING_MESSAGE/* El tipo de ventana, en este caso WARNING */);
+			// Si la respuesta es sí(YES_OPTION)
+			if (resp == JOptionPane.YES_OPTION) {
+
+				try {
+					c1 = new MisConexiones();
+				} catch (InstantiationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IllegalAccessException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				PreparedStatement ps = null;
+				try {
+					ps = c1.getPS(ConfigDir.getInstance().getProperty("query7"));
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					ps.setInt(1, seleccionado.getId());
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					ps.executeUpdate();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				refresh();
+
+			} // El valor de box2 sera 1
+				// Si la respuesta es no (NO_OPTION)
+			if (resp == JOptionPane.NO_OPTION) {
+				box2 = "0";
+			} // El valor de box2 sera 0
+		}
+
+	}
+	
+	public class gestorActualizar implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			try {
+				PreparedStatement ps = new MisConexiones().getPS(ConfigDir.getInstance().getProperty("query8"));
+				ps.setString(1, tf_nombre.getText());
+				ps.setString(2, tf_apellido.getText());
+				ps.setString(3, tf_alias.getText());
+				ps.setString(4, tf_clave.getText());
+				ps.setTimestamp(5, Timestamp.valueOf(tf_fecha_entrada.getText()));
+				ps.setInt(6, Integer.valueOf(tf_grupo.getText()));
+				ps.executeUpdate();
+				refresh();
+			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+	}
+
+	
+	public void refresh() {
+		dtm.setRowCount(0);
+		Empleado empleado;
+		try {
+			MisConexiones c;
+			c = new MisConexiones();
+			listaUsuarios = new ArrayList<Usuario>();
+			ResultSet rs = c.getRS(ConfigDir.getInstance().getProperty("query1"));
+			while (rs.next()) {
+				usuario = new Usuario(rs.getInt("id"),rs.getInt("grupo"),rs.getNString("nombre"), rs.getNString("apellido"), rs.getNString("alias"), rs.getNString("clave"),
+						rs.getTimestamp("fecha_nacimiento"));
+				v = new Vector();
+				v.addElement(usuario.getNombre());
+				v.addElement(usuario.getApellido());
+				v.addElement(usuario.getAlias());
+				v.addElement(usuario.getClave());
+				v.addElement(usuario.getGrupo());
+				// listaEmpleado.addElement(fechaEsp(empleado.getFecha_nacimiento()));
+				v.addElement(usuario.getFecha_entrada());
+				
+				dtm.addRow(v);
+				listaUsuarios.add(usuario);
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			System.out.println(e1.getMessage());
+		}
+		
+	}
 	
 	public class gestorTabla implements MouseInputListener{
 	
@@ -214,6 +373,40 @@ public class PanelUsuario extends JPanel {
 			
 		}
 	}
+
+
+	@Override
+	public void addUsuario(Usuario usuario) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Usuario> getAllUsuarios() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Usuario getbyId(int id) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Usuario updateUsuario(Usuario usuario) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteUsuario(int id) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
 	
 	
 	
