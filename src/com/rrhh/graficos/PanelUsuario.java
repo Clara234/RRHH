@@ -150,15 +150,19 @@ public class PanelUsuario extends JPanel  implements Servicios2{
 		JButton botonVer = new JButton("Ver");
 		botonVer.setForeground(Color.BLUE);
 		panelEsteControl.add(botonVer);
+		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 10)));
 		JButton botonInsertar = new JButton("Insertar");
 		botonInsertar.setForeground(Color.BLUE);
 		panelEsteControl.add(botonInsertar);
+		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 10)));
 		JButton botonBorrar = new JButton("Borrar");
 		botonBorrar.setForeground(Color.BLUE);
 		panelEsteControl.add(botonBorrar);
+		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 10)));
 		JButton botonActualizar = new JButton("Actualizar");
 		botonActualizar.setForeground(Color.BLUE);
 		panelEsteControl.add(botonActualizar);
+		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 10)));
 		
 		
 		

@@ -2,10 +2,6 @@ package com.rrhh.graficos;
 
 import javax.print.attribute.standard.Media;
 
-
-
-
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -50,13 +46,13 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 	Vector v;
 	Empleado seleccionado;
-	//Empleado emp;
+	// Empleado emp;
 	DefaultTableModel dtm;
 	JTable tabla;
-	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento;
-	public JButton botonVer,botonInsertar,botonBorrar,botonActualizar ,botonAcceder;//cambiar botonConexion=botonVer
-	
-	JCheckBox chb_jefe, chb_root;
+	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento, tf_europa;
+	public JButton botonVer, botonInsertar, botonBorrar, botonActualizar, botonAcceder;// cambiar botonConexion=botonVer
+
+	JCheckBox chb_jefe, chb_root, chb_europa;
 	TableRowSorter TRSfiltro;
 	List<Empleado> listaEmpleados;
 	private JTextComponent txtFiltro;
@@ -65,14 +61,16 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	public JPasswordField clave;
 	public JTextField mialias;
 	public JLabel etiqueta;
-
+	protected String europa;
+	protected double salario;
 
 	public PanelEmpleado(int ancho, int alto) {
 		// disposiciones de los objetos
 		setLayout(new BorderLayout());
 		add(setMenuBar(alto, ancho), BorderLayout.NORTH);
 		add(setTabla(alto, ancho), BorderLayout.CENTER);
-		add(setPanelEste(alto, ancho, setPanelEsteDatos(alto, ancho), setPanelEsteControl(ancho, alto)),BorderLayout.EAST);
+		add(setPanelEste(alto, ancho, setPanelEsteDatos(alto, ancho), setPanelEsteControl(ancho, alto)),
+				BorderLayout.EAST);
 		editHabCosas(0);
 	}
 
@@ -116,53 +114,101 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
+
 				try {
 					creaBackupTablas();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-			
+
 			}
 
-			
+			/*
+			 * He estado intentando a ve si me salia el filtro. Pero muchos errores al final
+			 * me estresan mas He intentado hacer los filtros de varias maneras pero me
+			 * sigue dando error. Lo siento
+			 */
 
-		
-
-			
 		});
 		JMenu busquedas = new JMenu("Buscar");
-		JMenuItem salario = new JMenuItem("por salarios");
-		salario.addActionListener(new ActionListener() {
-			// generar filtro de busqueda por salalrios
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
+		JMenuItem tiempo = new JMenuItem("por tiempo");
 
-			}
-
-		});
-
-		JMenuItem jefes = new JMenuItem("por jefes");
-		jefes.addActionListener(new ActionListener() {
+		tiempo.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-                           gestorJefes();
+				try {
+					filtro(europa, tabla);
+				} catch (InstantiationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IllegalAccessException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 
-			private void gestorJefes() {
+			private void filtro(String europa, JTable tabla)
+					throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 				// TODO Auto-generated method stub
-				
+				MisConexiones c = new MisConexiones();
+				PreparedStatement ps = c.getPS(ConfigDir.getInstance().getProperty("filtro"));
+				dtm = new DefaultTableModel();
+				tabla.getModel();
+				TableRowSorter<DefaultTableModel> tr = new TableRowSorter<>(dtm);
+
+				tr.setRowFilter(RowFilter.regexFilter(europa));
 			}
 
 		});
 
-		busquedas.add(salario);
-		busquedas.add(jefes);
-		menu.add(miCalculadora);
+		JMenuItem salarios = new JMenuItem("por salario");
+		salarios.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					filtro2(salario, tabla);
+				} catch (InstantiationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IllegalAccessException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+
+			private void filtro2(double salario, JTable tabla)
+					throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+				// TODO Auto-generated method stub
+				MisConexiones c = new MisConexiones();
+				PreparedStatement ps = c.getPS(ConfigDir.getInstance().getProperty("salario"));
+				dtm = new DefaultTableModel();
+				tabla.getModel();
+				TableRowSorter<DefaultTableModel> tr = new TableRowSorter<>(dtm);
+
+				// tr.setRowFilter(RowFilter.regexFilter(salario))
+			}
+
+		});
+
+		busquedas.add(tiempo);
+		busquedas.add(salarios);
 		menu.add(miNavegador);
 		menu.add(miCopiaBase);
 		menuBar.add(busquedas);
@@ -171,10 +217,10 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		return menuBar;
 
 	}
-	
-	
 
+	private void filtro(String europa, JTable setTabla) {
 
+	}
 
 //clase para crear copia de la base de datos ejercicio regiones
 
@@ -220,6 +266,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		dtm.addColumn("Salario");
 		dtm.addColumn("Fecha nacimiento");
 		dtm.addColumn("Jefe");
+		dtm.addColumn("Europa");
 		// se crea una tabla con la configuracion dtm que hemos creado
 		tabla = new JTable(dtm);
 		tabla.addMouseListener(new gestorTabla());
@@ -273,6 +320,9 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		JLabel l_jefe = new JLabel("Jefe");
 		l_jefe.setForeground(Color.black);
 		chb_jefe = new JCheckBox();
+		JLabel l_europa = new JLabel("Jefe");
+		l_europa.setForeground(Color.black);
+		chb_europa = new JCheckBox();
 		panelEsteDatos.add(l_idDepartamento);
 		panelEsteDatos.add(tf_idDepartamento);
 		panelEsteDatos.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -293,7 +343,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		panelEsteDatos.add(Box.createRigidArea(new Dimension(0, 10)));
 		panelEsteDatos.add(l_jefe);
 		panelEsteDatos.add(chb_jefe);
-		panelEsteDatos.setPreferredSize(new Dimension((int) (ancho * 0.1), (int) (alto *1.1)));
+		panelEsteDatos.setPreferredSize(new Dimension((int) (ancho * 0.1), (int) (alto * 1.1)));
 
 		return panelEsteDatos;
 	}
@@ -306,20 +356,24 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		botonVer = new JButton("Ver");
 		botonVer.setForeground(Color.BLUE);
 		panelEsteControl.add(botonVer);
+		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 		botonInsertar = new JButton("Insertar");
 		botonInsertar.setForeground(Color.BLUE);
 		panelEsteControl.add(botonInsertar);
+		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 		botonBorrar = new JButton("Borrar");
 		botonBorrar.setForeground(Color.BLUE);
 		panelEsteControl.add(botonBorrar);
+		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 		botonActualizar = new JButton("Actualizar");
 		botonActualizar.setForeground(Color.BLUE);
 		panelEsteControl.add(botonActualizar);
+		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 
 		chb_root = new JCheckBox("InicioSesion");
 		chb_root.setForeground(Color.BLUE);
 		chb_root.addActionListener(new gestorEdicion());
-		
+
 		botonInsertar.addActionListener(new gestorInsertar());
 		botonVer.addActionListener(new gestorVer());
 		botonActualizar.addActionListener(new gestorActualizar());
@@ -328,10 +382,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		// devolvemos el panel de control
 		return panelEsteControl;
 	}
-
-
-
-
 
 	public JPanel setPanelEste(int alto, int ancho, JPanel p1, JPanel p2) {
 		JPanel panelEste = new JPanel();
@@ -357,8 +407,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 	}
 
-	
-
 	public class gestorVer implements ActionListener {
 
 		@Override
@@ -373,7 +421,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			
 
 			try {
 				MisConexiones c = new MisConexiones();
@@ -406,8 +453,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			tf_idPuesto.setText("" + seleccionado.getId_puesto());
 			tf_nombre.setText(seleccionado.getNombre());
 			tf_apellidos.setText(seleccionado.getApellido());
-			tf_salario.setText(""+seleccionado.getSalario());
-			tf_fecha_nacimiento.setText(""+seleccionado.getFecha_nacimiento());
+			tf_salario.setText("" + seleccionado.getSalario());
+			tf_fecha_nacimiento.setText("" + seleccionado.getFecha_nacimiento());
 			chb_jefe.setSelected(seleccionado.isJefe());
 		}
 
@@ -609,15 +656,16 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		}
 	}
 
-	/*public void filtro() {
-		int columnTable = 5;
-		TRSfiltro.setRowFilter(RowFilter.regexFilter(txtFiltro.getText(), columnTable));
-
-	}*/
-
+	/*
+	 * public void filtro() { int columnTable = 5;
+	 * TRSfiltro.setRowFilter(RowFilter.regexFilter(txtFiltro.getText(),
+	 * columnTable));
+	 * 
+	 * }
+	 */
 
 	public void ejecutarComando(String comando) throws IOException {
-		String[] comandito = new String[] {comando};
+		String[] comandito = new String[] { comando };
 		final Process proceso = Runtime.getRuntime().exec(comandito);
 	}
 
@@ -625,21 +673,20 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		String[] comandito = new String[] { comando1, comando2 };
 		final Process proceso = Runtime.getRuntime().exec(comandito);
 	}
-	
-	
+
 // private MiPractica veamos;
 	public class gestorEdicion implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 
 			if (chb_root.isSelected()) {
-				
+
 				dialogoinicial = new JDialog(new JFrame(), true);
 				dialogoinicial.setResizable(false);
 				dialogoinicial.setBackground(new Color(206, 238, 244));
 				dialogoinicial.setForeground(new Color(206, 237, 244));
-				dialogoinicial.setSize(250,250);
-				dialogoinicial.setMinimumSize(new Dimension(250,250));
-				dialogoinicial.setLocation(250,250);
+				dialogoinicial.setSize(250, 250);
+				dialogoinicial.setMinimumSize(new Dimension(250, 250));
+				dialogoinicial.setLocation(250, 250);
 				dialogoinicial.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				mialias = new JTextField(16);
 				clave = new JPasswordField(16);
@@ -651,43 +698,41 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 				botonAcceder = new JButton("Acceder");
 
 				botonAcceder.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e)  {
-						
+					public void actionPerformed(ActionEvent e) {
+
 						try {
-							
-							PreparedStatement ps = new MisConexiones().getPS(ConfigDir.getInstance().getProperty("validacionUsu"));
+
+							PreparedStatement ps = new MisConexiones()
+									.getPS(ConfigDir.getInstance().getProperty("validacionUsu"));
 							ps.setString(1, mialias.getText());
 							ps.setString(2, Auxiliar.dameContrasenna(clave.getPassword()));
-							ps.setInt(3, combo.getSelectedIndex()+1);
+							ps.setInt(3, combo.getSelectedIndex() + 1);
 							ResultSet rs = ps.executeQuery();
-							if(rs.next()) {
+							if (rs.next()) {
 								editHabCosas(rs.getInt("grupo"));
 								dialogoinicial.dispose();
 							} else {
-								JOptionPane.showMessageDialog(null, "Ese usuario no existe, puto");
+								JOptionPane.showMessageDialog(null, "Ese usuario no existe");
 							}
-							
-							
 
-						} catch (Exception e1) {e1.printStackTrace();}
-					
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+
 					}
 
 				});
 
-			
 				botonAcceder.setForeground(Color.pink);
 
 				dialogoinicial.add(botonAcceder);
 				dialogoinicial.add(mialias);
 				dialogoinicial.add(clave);
 				dialogoinicial.add(combo);
-				
+
 				JPanel panelentrada = new JPanel();
 				panelentrada.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
 
-			
-				
 				panelentrada.add(new JLabel("Introduzca su  alias"));
 				panelentrada.add(mialias);
 				panelentrada.add(new JLabel("Introduzca su contraseña"));
@@ -695,26 +740,21 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 				panelentrada.add(new JLabel("    GRUPOS"));
 				panelentrada.add(combo);
 				panelentrada.add(new JLabel("  copyright by Clara"));
-				
+
 				panelentrada.add(botonAcceder);
-				
-			
 
 				panelentrada.setSize(250, 250);
 				panelentrada.setBackground(new Color(209, 222, 244));
 				panelentrada.setForeground(new Color(209, 222, 224));
 				dialogoinicial.add(panelentrada);
-               dialogoinicial.setVisible(true);
-               panelentrada.setVisible(true);
-           
-		
+				dialogoinicial.setVisible(true);
+				panelentrada.setVisible(true);
+
 			} else {
 				chb_root.setSelected(false);
 				editHabCosas(0);
 			}
 		}
-	
-		
 
 	}
 
@@ -731,7 +771,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		case 1:
 			editHabCosas(0);
 			refresh();
-			int n = JOptionPane.showConfirmDialog(new JDialog(), "Dese dar de alta alguno?","Usuarios", JOptionPane.YES_NO_OPTION);
+			int n = JOptionPane.showConfirmDialog(new JDialog(), "Dese dar de alta alguno?", "Usuarios",
+					JOptionPane.YES_NO_OPTION);
 			if (n == JOptionPane.YES_OPTION) {
 				// veamos = new MiPractica();
 				dialogoinicial.dispose();
@@ -751,16 +792,16 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			tf_apellidos.setEditable(true);
 			tf_salario.setEditable(true);
 			tf_fecha_nacimiento.setEditable(true);
-			
+
 			break;
 		case 2:
 			editHabCosas(0);
 			refresh();
-			
+
 			System.out.println("Avanzado");
 			botonVer.setEnabled(true);
 			botonInsertar.setEnabled(true);
-			
+
 			break;
 		case 3:
 			editHabCosas(0);
@@ -785,7 +826,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		}
 
 	}
-	
+
 	@Override
 	public void addEmpleado(Empleado emp) throws SQLException {
 		// TODO Auto-generated method stub
