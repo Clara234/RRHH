@@ -6,10 +6,12 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 public class Lan {
@@ -17,8 +19,16 @@ public class Lan {
 	
 	public static void main(String[] args) {
 		setMarco();
+		try {
+		JFrame.setDefaultLookAndFeelDecorated(true);
+		JDialog.setDefaultLookAndFeelDecorated(true);
+		UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		}
 
-	}
+	
 	public static void setMarco() {
 		JFrame marco = new JFrame("RRHH");            
 		//top,left
@@ -26,7 +36,6 @@ public class Lan {
 		marco.getToolkit().getScreenSize();
 		marco.setForeground(Color.PINK);
 	    JOptionPane.showMessageDialog(marco, "Bienvenido", null, JOptionPane.INFORMATION_MESSAGE);
-		
 	    Toolkit.getDefaultToolkit().beep();
 		
 		
@@ -34,7 +43,7 @@ public class Lan {
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		Image imagen = tk.getImage("icon.png");
 		marco.setIconImage(imagen);
-		marco.setMinimumSize(new Dimension(800,805));
+		marco.setMinimumSize(new Dimension(800,840));
 		//almacenar las dimensiones de la pantalla del usuario
 		Dimension dim=tk.getScreenSize();
 		int anchoM=(int)(dim.width/2), altoM=(int)(dim.height/2);
@@ -42,7 +51,7 @@ public class Lan {
 		
 		//crear pestañas dentro del panel:
 		JTabbedPane pestanha = new JTabbedPane();
-		pestanha.setForeground(Color.gray);
+		pestanha.setForeground(Color.DARK_GRAY);
 		pestanha.add("Empleados", new PanelEmpleado(anchoM, altoM));
 		pestanha.add("Usuarios", new PanelUsuario(anchoM1, altoM1));
 		//Aqui es donde se visualiza, añadiendolo al marco

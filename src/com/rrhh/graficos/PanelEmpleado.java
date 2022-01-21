@@ -49,19 +49,18 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	// Empleado emp;
 	DefaultTableModel dtm;
 	JTable tabla;
-	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento, tf_europa;
-	public JButton botonVer, botonInsertar, botonBorrar, botonActualizar, botonAcceder;// cambiar botonConexion=botonVer
+	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento;
+	public JButton botonVer, botonInsertar, botonBorrar, botonActualizar,botonInforme, botonAcceder;// cambiar botonConexion=botonVer
 
 	JCheckBox chb_jefe, chb_root, chb_europa;
-	TableRowSorter TRSfiltro;
+	// TableRowSorter TRSfiltro;
 	List<Empleado> listaEmpleados;
-	private JTextComponent txtFiltro;
+	// private JTextComponent txtFiltro;
 	public JDialog dialogoinicial;
 	public JComboBox<Object> combo;
 	public JPasswordField clave;
 	public JTextField mialias;
 	public JLabel etiqueta;
-	protected String europa;
 	protected double salario;
 
 	public PanelEmpleado(int ancho, int alto) {
@@ -131,6 +130,16 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			 */
 
 		});
+		JMenuItem informes = new JMenuItem("");
+		informes.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				// generar informe de empleado
+			}
+
+		});
 		JMenu busquedas = new JMenu("Buscar");
 		JMenuItem tiempo = new JMenuItem("por tiempo");
 
@@ -138,34 +147,8 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				try {
-					filtro(europa, tabla);
-				} catch (InstantiationException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IllegalAccessException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ClassNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
 
-			private void filtro(String europa, JTable tabla)
-					throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 				// TODO Auto-generated method stub
-				MisConexiones c = new MisConexiones();
-				PreparedStatement ps = c.getPS(ConfigDir.getInstance().getProperty("filtro"));
-				dtm = new DefaultTableModel();
-				tabla.getModel();
-				TableRowSorter<DefaultTableModel> tr = new TableRowSorter<>(dtm);
-
-				tr.setRowFilter(RowFilter.regexFilter(europa));
 			}
 
 		});
@@ -210,6 +193,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		busquedas.add(tiempo);
 		busquedas.add(salarios);
 		menu.add(miNavegador);
+		menu.add(miCalculadora);
 		menu.add(miCopiaBase);
 		menuBar.add(busquedas);
 		menuBar.add(menu);
@@ -266,7 +250,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		dtm.addColumn("Salario");
 		dtm.addColumn("Fecha nacimiento");
 		dtm.addColumn("Jefe");
-		dtm.addColumn("Europa");
+
 		// se crea una tabla con la configuracion dtm que hemos creado
 		tabla = new JTable(dtm);
 		tabla.addMouseListener(new gestorTabla());
@@ -354,20 +338,24 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 5)));
 		panelEsteControl.setPreferredSize(new Dimension((int) (alto * 0.01), (int) (ancho * 0.01)));
 		botonVer = new JButton("Ver");
-		botonVer.setForeground(Color.BLUE);
+		botonVer.setForeground(Color.blue);
 		panelEsteControl.add(botonVer);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 		botonInsertar = new JButton("Insertar");
-		botonInsertar.setForeground(Color.BLUE);
+		botonInsertar.setForeground(Color.blue);
 		panelEsteControl.add(botonInsertar);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 		botonBorrar = new JButton("Borrar");
-		botonBorrar.setForeground(Color.BLUE);
+		botonBorrar.setForeground(Color.blue);
 		panelEsteControl.add(botonBorrar);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 		botonActualizar = new JButton("Actualizar");
-		botonActualizar.setForeground(Color.BLUE);
+		botonActualizar.setForeground(Color.blue);
 		panelEsteControl.add(botonActualizar);
+		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
+		botonInforme = new JButton("Informe");
+		botonInforme.setForeground(Color.blue);
+		panelEsteControl.add(botonInforme);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 
 		chb_root = new JCheckBox("InicioSesion");
@@ -377,11 +365,13 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		botonInsertar.addActionListener(new gestorInsertar());
 		botonVer.addActionListener(new gestorVer());
 		botonActualizar.addActionListener(new gestorActualizar());
+		botonInforme.addActionListener(new gestorInforme());
 		botonBorrar.addActionListener(new gestorBorrar());
 		panelEsteControl.add(chb_root);
 		// devolvemos el panel de control
 		return panelEsteControl;
 	}
+	
 
 	public JPanel setPanelEste(int alto, int ancho, JPanel p1, JPanel p2) {
 		JPanel panelEste = new JPanel();
@@ -495,6 +485,17 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		}
 
 	}
+	
+	public class gestorInforme implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
 
 	public class gestorBorrar implements ActionListener {
 
@@ -771,7 +772,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		case 1:
 			editHabCosas(0);
 			refresh();
-			int n = JOptionPane.showConfirmDialog(new JDialog(), "Dese dar de alta alguno?", "Usuarios",
+			int n = JOptionPane.showConfirmDialog(new JDialog(), "Desee dar de alta alguno?", "Usuarios",
 					JOptionPane.YES_NO_OPTION);
 			if (n == JOptionPane.YES_OPTION) {
 				// veamos = new MiPractica();
@@ -785,6 +786,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			botonVer.setEnabled(true);
 			botonInsertar.setEnabled(true);
 			botonBorrar.setEnabled(true);
+			botonInforme.setEnabled(true);
 			botonActualizar.setEnabled(true);
 			tf_idDepartamento.setEditable(true);
 			tf_idPuesto.setEditable(true);
@@ -813,6 +815,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			dtm.setRowCount(0);
 			botonVer.setEnabled(false);
 			botonInsertar.setEnabled(false);
+			botonInforme.setEnabled(false);
 			botonBorrar.setEnabled(false);
 			botonActualizar.setEnabled(false);
 			tf_idDepartamento.setEditable(false);
