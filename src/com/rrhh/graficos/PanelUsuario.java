@@ -72,6 +72,7 @@ public class PanelUsuario extends JPanel  implements Servicios2{
 	public JPanel setPanelEste(int alto, int ancho, JPanel p1, JPanel p2) {
 		JPanel panelEste = new JPanel();
 		panelEste.setLayout(new BorderLayout());
+		panelEste.setForeground(Color.YELLOW);
 		panelEste.setPreferredSize(new Dimension((int) (ancho * 0.15), (int) (alto * 0.8)));
 		panelEste.add(p1, BorderLayout.NORTH);
 		panelEste.add(p2, BorderLayout.CENTER);
@@ -85,7 +86,7 @@ public class PanelUsuario extends JPanel  implements Servicios2{
 		JLabel l_nombre = new JLabel("Nombre");
 		tf_nombre = new JTextField();
 		tf_nombre.setForeground(Color.gray);
-		Font f = new Font("Italic", Font.ITALIC,12);
+		Font f = new Font("TimesRoman", Font.BOLD,12);
 		tf_nombre.setFont(f);
 		tf_nombre.setMaximumSize(new Dimension(250,20));
 		JLabel l_apellido = new JLabel("Apellido");

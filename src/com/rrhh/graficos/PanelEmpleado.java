@@ -1,28 +1,19 @@
 package com.rrhh.graficos;
 
-import javax.print.attribute.standard.Media;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
+
 import javax.swing.event.MouseInputListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
-import javax.swing.text.JTextComponent;
+
 
 import com.rrhh.auxiliares.Auxiliar;
 //import com.rrhh.auxiliares.CreaBackupTablas;
-import com.rrhh.auxiliares.DameFecha;
 import com.rrhh.persistencia.ConfigDir;
 import com.rrhh.persistencia.MisConexiones;
-import com.rrhh.pojos.Cliente;
 import com.rrhh.pojos.Empleado;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,6 +22,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +31,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.lang.NumberFormatException;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 import java.util.Vector;
 import java.awt.*;
 
@@ -48,11 +43,14 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	Empleado seleccionado;
 	// Empleado emp;
 	DefaultTableModel dtm;
+	MisConexiones c;
+	ResultSet rs;
+	PreparedStatement ps;
 	JTable tabla;
 	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento;
-	public JButton botonVer, botonInsertar, botonBorrar, botonActualizar,botonInforme, botonAcceder;// cambiar botonConexion=botonVer
-
-	JCheckBox chb_jefe, chb_root, chb_europa;
+	public JButton botonVer, botonInsertar, botonBorrar, botonActualizar,botonInforme, botonAcceder, botonFiltrar;// cambiar botonConexion=botonVer
+    JMenuItem miCalculadora, miNavegador, miCopiaBase, informes, jefe, salarios;
+	JCheckBox chb_jefe, chb_root;
 	// TableRowSorter TRSfiltro;
 	List<Empleado> listaEmpleados;
 	// private JTextComponent txtFiltro;
@@ -77,7 +75,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("Acessos Rápidos");
 
-		JMenuItem miCalculadora = new JMenuItem("Calculadora");
+	   miCalculadora = new JMenuItem("Calculadora");
 		miCalculadora.addActionListener(new ActionListener() {
 
 			@Override
@@ -92,7 +90,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			}
 
 		});
-		JMenuItem miNavegador = new JMenuItem("Navegador");
+		 miNavegador = new JMenuItem("Navegador");
 		miNavegador.addActionListener(new ActionListener() {
 
 			@Override
@@ -107,7 +105,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			}
 
 		});
-		JMenuItem miCopiaBase = new JMenuItem("Backup");
+		 miCopiaBase = new JMenuItem("Backup");
 		miCopiaBase.addActionListener(new ActionListener() {
 
 			@Override
@@ -130,7 +128,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			 */
 
 		});
-		JMenuItem informes = new JMenuItem("");
+		 informes = new JMenuItem("");
 		informes.addActionListener(new ActionListener() {
 
 			@Override
@@ -141,56 +139,37 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 		});
 		JMenu busquedas = new JMenu("Buscar");
-		JMenuItem tiempo = new JMenuItem("por tiempo");
+		 jefe = new JMenuItem("jefe");
 
-		tiempo.addActionListener(new ActionListener() {
+		jefe.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
 				// TODO Auto-generated method stub
+				filtroJefe();
 			}
 
 		});
 
-		JMenuItem salarios = new JMenuItem("por salario");
+		 salarios = new JMenuItem("salario");
 		salarios.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				try {
-					filtro2(salario, tabla);
-				} catch (InstantiationException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IllegalAccessException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ClassNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					filtroSalario();
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-			}
-
-			private void filtro2(double salario, JTable tabla)
-					throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-				// TODO Auto-generated method stub
-				MisConexiones c = new MisConexiones();
-				PreparedStatement ps = c.getPS(ConfigDir.getInstance().getProperty("salario"));
-				dtm = new DefaultTableModel();
-				tabla.getModel();
-				TableRowSorter<DefaultTableModel> tr = new TableRowSorter<>(dtm);
-
-				// tr.setRowFilter(RowFilter.regexFilter(salario))
-			}
+				}
+	
 
 		});
 
-		busquedas.add(tiempo);
+		busquedas.add(jefe);
 		busquedas.add(salarios);
 		menu.add(miNavegador);
 		menu.add(miCalculadora);
@@ -202,9 +181,11 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 	}
 
-	private void filtro(String europa, JTable setTabla) {
+	
 
-	}
+
+
+
 
 //clase para crear copia de la base de datos ejercicio regiones
 
@@ -305,8 +286,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		l_jefe.setForeground(Color.black);
 		chb_jefe = new JCheckBox();
 		JLabel l_europa = new JLabel("Jefe");
-		l_europa.setForeground(Color.black);
-		chb_europa = new JCheckBox();
 		panelEsteDatos.add(l_idDepartamento);
 		panelEsteDatos.add(tf_idDepartamento);
 		panelEsteDatos.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -413,7 +392,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		public void actionPerformed(ActionEvent e) {
 
 			try {
-				MisConexiones c = new MisConexiones();
+				 c = new MisConexiones();
 				PreparedStatement ps = c.getPS(ConfigDir.getInstance().getProperty("query2"));
 				ps.setInt(1, Integer.valueOf(tf_idDepartamento.getText()));
 				ps.setInt(2, Integer.valueOf(tf_idPuesto.getText()));
@@ -523,7 +502,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				PreparedStatement ps = null;
+				
 				try {
 					ps = c1.getPS(ConfigDir.getInstance().getProperty("query3"));
 				} catch (SQLException e1) {
@@ -794,6 +773,14 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			tf_apellidos.setEditable(true);
 			tf_salario.setEditable(true);
 			tf_fecha_nacimiento.setEditable(true);
+			miCalculadora.setEnabled(true);
+			miNavegador.setEnabled(true);
+			miCopiaBase.setEnabled(true);
+			informes.setEnabled(true);
+			jefe.setEnabled(true);
+			salarios.setEnabled(true);
+			
+			
 
 			break;
 		case 2:
@@ -803,6 +790,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			System.out.println("Avanzado");
 			botonVer.setEnabled(true);
 			botonInsertar.setEnabled(true);
+			
 
 			break;
 		case 3:
@@ -824,11 +812,102 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			tf_apellidos.setEditable(false);
 			tf_salario.setEditable(false);
 			tf_fecha_nacimiento.setEditable(false);
+			miCalculadora.setEnabled(false);
+			miNavegador.setEnabled(false);
+			miCopiaBase.setEnabled(false);
+			informes.setEnabled(false);
+			jefe.setEnabled(false);
+			salarios.setEnabled(false);
 			break;
 
 		}
 
 	}
+	
+	protected void filtroSalario() throws SQLException  {
+		// TODO Auto-generated method stub
+		int contador = 1;
+		String [] columnas = {"idDepartamento","idPuesto","nombre","Apellidos","Salario", "Fecha_nacimiento","Jefe"};
+		String[] registros= new String[7];
+		
+		
+		rs  = ps.executeQuery();
+		try {
+			c = new MisConexiones();
+		} catch (InstantiationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		
+		
+		
+		try {
+			Connection c1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/ejercicioregiones?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC","root","root"	);
+			ps = c.getPS(ConfigDir.getInstance().getProperty("filtroSalario"));
+			ps.setInt(1, Integer.valueOf(tf_idDepartamento.getText()));
+			ps.setInt(2, Integer.valueOf(tf_idPuesto.getText()));
+			ps.setString(3, tf_nombre.getText());
+			ps.setString(4, tf_apellidos.getText());
+			ps.setDouble(5, Double.valueOf(tf_salario.getText()));
+			ps.setTimestamp(6, Timestamp.valueOf(tf_fecha_nacimiento.getText()));
+			ps.setBoolean(7, chb_jefe.isSelected());
+			ps.setInt(8, seleccionado.getId());
+			ps.executeUpdate();
+			
+			while(rs.next()) {
+				registros[0] = Integer.toString(contador);
+				registros[1] = rs.getString("idDepartamento");
+				registros[2] = rs.getString("idPuesto");
+				registros[3] = rs.getString("nombre");
+				registros[4] = rs.getString("apellidos");
+				registros[5] = rs.getString("salario");
+				registros[6] = rs.getString("fecha_nacimiento");
+			    registros[7] = rs.getString("Jefe");
+				
+				dtm.addRow(registros);
+				contador++;
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	protected void filtroJefe() {
+	            //  Icon c = new ImageIcon(getClass().getResource("C:\\Users\\dam\\eclipse-workspace\\RRHH\\src\\img\\jefe.jpg"));
+				// TODO Auto-generated method stub
+				int resp;
+				resp = JOptionPane.showConfirmDialog(null, "Solo saldran los jefes"+ "¿Quieres verlo?",
+						 "", JOptionPane.YES_NO_OPTION,
+						JOptionPane.WARNING_MESSAGE, new ImageIcon("C:\\Users\\dam\\eclipse-workspace\\RRHH\\src\\img\\jefe.jpg"));
+				if(resp == JOptionPane.YES_OPTION) {
+			
+				try {
+					ps = new MisConexiones().getConexion().prepareStatement(ConfigDir.getInstance().getProperty("filtroJefe"));
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				}
+				if(resp == JOptionPane.NO_OPTION) {
+						System.out.println("No funciona");
+				}
+				
+			}
+			
+		
+	
+		
 
 	@Override
 	public void addEmpleado(Empleado emp) throws SQLException {

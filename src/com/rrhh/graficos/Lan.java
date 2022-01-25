@@ -41,7 +41,7 @@ public class Lan {
 		
 		//es abstracta, toolkit no puede crear new, no es instanciable
 		Toolkit tk = Toolkit.getDefaultToolkit();
-		Image imagen = tk.getImage("icon.png");
+		Image imagen = tk.getImage("C:\\Users\\dam\\eclipse-workspace\\RRHH\\src\\img\\icon.png");
 		marco.setIconImage(imagen);
 		marco.setMinimumSize(new Dimension(800,840));
 		//almacenar las dimensiones de la pantalla del usuario
@@ -65,7 +65,7 @@ public class Lan {
 		System.out.println(dim.width+"px x "+dim.height+"px");
 		//especificamos al programa que finalice cuando el marco se cierre
 		marco.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		//marco.setMinimumSize(new Dimension(800,750));
+		marco.setMinimumSize(new Dimension(800,700));
 		//Se pon visible al final
 		marco.setVisible(true);
 	}
