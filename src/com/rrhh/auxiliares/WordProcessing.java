@@ -1,5 +1,10 @@
 package com.rrhh.auxiliares;
 
-public class WordProcessing {
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
+public class WordProcessing {
+	
+	
 }

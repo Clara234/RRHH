@@ -55,11 +55,6 @@ public class Lan {
 		pestanha.add("Empleados", new PanelEmpleado(anchoM, altoM));
 		pestanha.add("Usuarios", new PanelUsuario(anchoM1, altoM1));
 		//Aqui es donde se visualiza, añadiendolo al marco
-		
-		
-		
-		
-		
 		marco.getContentPane().add(pestanha);
 		//imprimir por consola la resolucion de la pantalla
 		System.out.println(dim.width+"px x "+dim.height+"px");

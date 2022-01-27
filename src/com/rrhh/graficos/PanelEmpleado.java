@@ -3,11 +3,13 @@ package com.rrhh.graficos;
 
 import javax.swing.*;
 
+
 import javax.swing.event.MouseInputListener;
 import javax.swing.table.DefaultTableModel;
 
 
 import com.rrhh.auxiliares.Auxiliar;
+import com.rrhh.auxiliares.WordProcessing;
 //import com.rrhh.auxiliares.CreaBackupTablas;
 import com.rrhh.persistencia.ConfigDir;
 import com.rrhh.persistencia.MisConexiones;
@@ -44,21 +46,20 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	// Empleado emp;
 	DefaultTableModel dtm;
 	MisConexiones c;
-	ResultSet rs;
+	
 	PreparedStatement ps;
 	JTable tabla;
-	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento;
-	public JButton botonVer, botonInsertar, botonBorrar, botonActualizar,botonInforme, botonAcceder, botonFiltrar;// cambiar botonConexion=botonVer
+	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento, tf_grupo,tf_alias,tf_clave;
+	public JButton botonVer, botonInsertar, botonBorrar, botonActualizar,botonInforme, botonAcceder, botonFiltrar, botonAlta,botonFuera;// cambiar botonConexion=botonVer
     JMenuItem miCalculadora, miNavegador, miCopiaBase, informes, jefe, salarios;
 	JCheckBox chb_jefe, chb_root;
-	// TableRowSorter TRSfiltro;
 	List<Empleado> listaEmpleados;
-	// private JTextComponent txtFiltro;
-	public JDialog dialogoinicial;
+	public JDialog dialogoinicial, dialogoUsuario;
 	public JComboBox<Object> combo;
 	public JPasswordField clave;
 	public JTextField mialias;
 	public JLabel etiqueta;
+	public int grupo;
 	protected double salario;
 
 	public PanelEmpleado(int ancho, int alto) {
@@ -128,16 +129,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			 */
 
 		});
-		 informes = new JMenuItem("");
-		informes.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				// generar informe de empleado
-			}
-
-		});
+		
 		JMenu busquedas = new JMenu("Buscar");
 		 jefe = new JMenuItem("jefe");
 
@@ -486,7 +478,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			int resp = JOptionPane.showConfirmDialog(null, "Usted eliminará a este usuario" + "¿Esta seguro?", // <- EL
 																												// MENSAJE
 					"Alerta!"/* <- El título de la ventana */, JOptionPane.YES_NO_OPTION/* Las opciones (si o no) */,
-					JOptionPane.WARNING_MESSAGE/* El tipo de ventana, en este caso WARNING */);
+					JOptionPane.WARNING_MESSAGE/* El tipo de ventana, en este caso WARNING */, new ImageIcon(""));
 			// Si la respuesta es sí(YES_OPTION)
 			if (resp == JOptionPane.YES_OPTION) {
 
@@ -610,7 +602,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		dtm.setRowCount(0);
 		Empleado empleado;
 		try {
-			MisConexiones c;
+		
 			c = new MisConexiones();
 			listaEmpleados = new ArrayList<Empleado>();
 			ResultSet rs = c.getRS(ConfigDir.getInstance().getProperty("query1"));
@@ -636,13 +628,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		}
 	}
 
-	/*
-	 * public void filtro() { int columnTable = 5;
-	 * TRSfiltro.setRowFilter(RowFilter.regexFilter(txtFiltro.getText(),
-	 * columnTable));
-	 * 
-	 * }
-	 */
+	
 
 	public void ejecutarComando(String comando) throws IOException {
 		String[] comandito = new String[] { comando };
@@ -751,11 +737,14 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		case 1:
 			editHabCosas(0);
 			refresh();
+		
 			int n = JOptionPane.showConfirmDialog(new JDialog(), "Desee dar de alta alguno?", "Usuarios",
-					JOptionPane.YES_NO_OPTION);
+					JOptionPane.YES_NO_OPTION, 0, new ImageIcon("C:\\\\Users\\dam\\eclipse-workspace\\RRHH\\src\\img\\adduser.png"));
 			if (n == JOptionPane.YES_OPTION) {
 				// veamos = new MiPractica();
-				dialogoinicial.dispose();
+				//hacer dar de alta a nuevo usuaerio
+				//dialogoinicial.dispose();
+				altaUsuario();
 			}
 
 			else if (n == JOptionPane.NO_OPTION) {
@@ -776,7 +765,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			miCalculadora.setEnabled(true);
 			miNavegador.setEnabled(true);
 			miCopiaBase.setEnabled(true);
-			informes.setEnabled(true);
 			jefe.setEnabled(true);
 			salarios.setEnabled(true);
 			
@@ -815,7 +803,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			miCalculadora.setEnabled(false);
 			miNavegador.setEnabled(false);
 			miCopiaBase.setEnabled(false);
-			informes.setEnabled(false);
 			jefe.setEnabled(false);
 			salarios.setEnabled(false);
 			break;
@@ -824,84 +811,154 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 	}
 	
+   public void altaUsuario() {
+		// TODO Auto-generated method stub
+		
+		dialogoUsuario = new JDialog(new JFrame());
+		dialogoUsuario.setResizable(true);
+		dialogoUsuario.setBackground(Color.CYAN);
+		dialogoUsuario.setForeground(Color.PINK);
+		dialogoUsuario.setSize(250, 250);
+		dialogoUsuario.setMinimumSize(new Dimension(250, 250));
+		dialogoUsuario.setLocation(250, 250);
+		dialogoUsuario.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		mialias = new JTextField(16);
+		clave = new JPasswordField(16);
+		dialogoUsuario.setTitle("ALTA USUARIOS");
+		combo = new JComboBox<Object>();
+		combo.addItem(dameObjeto("1"));
+		combo.addItem(dameObjeto("2"));
+		combo.addItem(dameObjeto("3"));
+		botonAlta = new JButton("Dar de Alta");
+		botonFuera = new JButton("Salir");
+	    botonAlta.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					c = new MisConexiones();
+					PreparedStatement ps = c.getPS(ConfigDir.getInstance().getProperty("altaUsu"));
+					ps.setString(1, mialias.getText());
+					ps.setString(2, Auxiliar.dameContrasenna(clave.getPassword()));
+					ps.setInt(3, combo.getSelectedIndex() + 1);
+					ps.execute();
+					
+					refresh();
+					 
+					
+				}catch(Exception e1) {e1.printStackTrace();}
+			}
+	    	
+	    });
+	    
+	    botonFuera.addActionListener(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+	    		
+	    		dialogoUsuario.dispose();
+	    	}
+	    });
+	    
+	    
+	    dialogoUsuario.add(mialias);
+	    dialogoUsuario.add(clave);
+	    dialogoUsuario.add(combo);
+	    dialogoUsuario.add(botonAlta);
+	    dialogoUsuario.add(botonFuera);
+	    
+	    JPanel panel = new JPanel();
+	    panel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
+
+	    panel.add(new JLabel("Introduzca su  alias"));
+	    panel.add(mialias);
+	    panel.add(new JLabel("Introduzca su contraseña"));
+		panel.add(clave);
+		panel.add(new JLabel(" GRUPOS"));
+		panel.add(combo);
+		panel.add(new JLabel("  copyright by Clara"));
+
+		panel.add(botonAlta);
+		panel.add(botonFuera);
+
+		panel.setSize(250, 250);
+		panel.setBackground(new Color(209, 222, 244));
+		dialogoUsuario.add(panel);
+		dialogoUsuario.setVisible(true);
+		panel.setVisible(true);
+	    
+	    
+	    
+	}
+
 	protected void filtroSalario() throws SQLException  {
 		// TODO Auto-generated method stub
-		int contador = 1;
-		String [] columnas = {"idDepartamento","idPuesto","nombre","Apellidos","Salario", "Fecha_nacimiento","Jefe"};
-		String[] registros= new String[7];
 		
 		
-		rs  = ps.executeQuery();
-		try {
-			c = new MisConexiones();
-		} catch (InstantiationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IllegalAccessException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		
 
-		
-		
-		
+
+		dtm.setRowCount(0);
+		Empleado empleado;
 		try {
-			Connection c1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/ejercicioregiones?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC","root","root"	);
-			ps = c.getPS(ConfigDir.getInstance().getProperty("filtroSalario"));
-			ps.setInt(1, Integer.valueOf(tf_idDepartamento.getText()));
-			ps.setInt(2, Integer.valueOf(tf_idPuesto.getText()));
-			ps.setString(3, tf_nombre.getText());
-			ps.setString(4, tf_apellidos.getText());
-			ps.setDouble(5, Double.valueOf(tf_salario.getText()));
-			ps.setTimestamp(6, Timestamp.valueOf(tf_fecha_nacimiento.getText()));
-			ps.setBoolean(7, chb_jefe.isSelected());
-			ps.setInt(8, seleccionado.getId());
-			ps.executeUpdate();
-			
-			while(rs.next()) {
-				registros[0] = Integer.toString(contador);
-				registros[1] = rs.getString("idDepartamento");
-				registros[2] = rs.getString("idPuesto");
-				registros[3] = rs.getString("nombre");
-				registros[4] = rs.getString("apellidos");
-				registros[5] = rs.getString("salario");
-				registros[6] = rs.getString("fecha_nacimiento");
-			    registros[7] = rs.getString("Jefe");
-				
-				dtm.addRow(registros);
-				contador++;
-				
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-	}
+			c = new MisConexiones();
+			listaEmpleados = new ArrayList<Empleado>();
+			ResultSet rs = c.getRS(ConfigDir.getInstance().getProperty("filtroSalario"));
+			while (rs.next()) {
+				empleado = new Empleado(rs.getInt("id"), rs.getNString("nombre"), rs.getNString("apellido"),
+						rs.getTimestamp("fecha_nacimiento"), rs.getDouble("salario"), rs.getBoolean("jefe"),
+						rs.getInt("idDepartamento"), rs.getInt("idPuesto"));
+				v = new Vector();
+				v.addElement(empleado.getId_departamento());
+				v.addElement(empleado.getId_puesto());
+				v.addElement(empleado.getNombre());
+				v.addElement(empleado.getApellido());
+				v.addElement(empleado.getSalario());
+				// listaEmpleado.addElement(fechaEsp(empleado.getFecha_nacimiento()));
+				v.addElement(empleado.getFecha_nacimiento());
+				v.addElement(formateoBoolean(empleado.isJefe()));
+				dtm.addRow(v);
+				listaEmpleados.add(empleado);
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			System.out.println(e1.getMessage());
+		}}
+		
+	
 	
 	
 	protected void filtroJefe() {
 	            //  Icon c = new ImageIcon(getClass().getResource("C:\\Users\\dam\\eclipse-workspace\\RRHH\\src\\img\\jefe.jpg"));
 				// TODO Auto-generated method stub
-				int resp;
-				resp = JOptionPane.showConfirmDialog(null, "Solo saldran los jefes"+ "¿Quieres verlo?",
-						 "", JOptionPane.YES_NO_OPTION,
-						JOptionPane.WARNING_MESSAGE, new ImageIcon("C:\\Users\\dam\\eclipse-workspace\\RRHH\\src\\img\\jefe.jpg"));
-				if(resp == JOptionPane.YES_OPTION) {
-			
-				try {
-					ps = new MisConexiones().getConexion().prepareStatement(ConfigDir.getInstance().getProperty("filtroJefe"));
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				}
-				if(resp == JOptionPane.NO_OPTION) {
-						System.out.println("No funciona");
-				}
+		dtm.setRowCount(0);
+		Empleado empleado;
+		try {
+		
+			c = new MisConexiones();
+			listaEmpleados = new ArrayList<Empleado>();
+			ResultSet rs = c.getRS(ConfigDir.getInstance().getProperty("filtroJefe"));
+			while (rs.next()) {
+				empleado = new Empleado(rs.getInt("id"), rs.getNString("nombre"), rs.getNString("apellido"),
+						rs.getTimestamp("fecha_nacimiento"), rs.getDouble("salario"), rs.getBoolean("jefe"),
+						rs.getInt("idDepartamento"), rs.getInt("idPuesto"));
+				v = new Vector();
+				v.addElement(empleado.getId_departamento());
+				v.addElement(empleado.getId_puesto());
+				v.addElement(empleado.getNombre());
+				v.addElement(empleado.getApellido());
+				v.addElement(empleado.getSalario());
+				// listaEmpleado.addElement(fechaEsp(empleado.getFecha_nacimiento()));
+				v.addElement(empleado.getFecha_nacimiento());
+				v.addElement(formateoBoolean(empleado.isJefe()));
+				dtm.addRow(v);
+				listaEmpleados.add(empleado);
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			System.out.println(e1.getMessage());
+		}
 				
 			}
 			
