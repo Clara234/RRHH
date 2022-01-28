@@ -4,6 +4,7 @@ package com.rrhh.graficos;
 import javax.swing.*;
 
 
+
 import javax.swing.event.MouseInputListener;
 import javax.swing.table.DefaultTableModel;
 
@@ -46,7 +47,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	// Empleado emp;
 	DefaultTableModel dtm;
 	MisConexiones c;
-	
 	PreparedStatement ps;
 	JTable tabla;
 	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento, tf_grupo,tf_alias,tf_clave;
@@ -112,7 +112,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-
+               JOptionPane.showMessageDialog(null, "Se realizara backup de la bbdd", "Backup", JOptionPane.INFORMATION_MESSAGE, new ImageIcon("C:\\Users\\dam\\eclipse-workspace\\RRHH\\src\\img\\descarg"));
 				try {
 					creaBackupTablas();
 				} catch (IOException e1) {
@@ -122,16 +122,12 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 			}
 
-			/*
-			 * He estado intentando a ve si me salia el filtro. Pero muchos errores al final
-			 * me estresan mas He intentado hacer los filtros de varias maneras pero me
-			 * sigue dando error. Lo siento
-			 */
+			
 
 		});
 		
 		JMenu busquedas = new JMenu("Buscar");
-		 jefe = new JMenuItem("jefe");
+		 jefe = new JMenuItem("jefes");
 
 		jefe.addActionListener(new ActionListener() {
 
@@ -139,6 +135,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			public void actionPerformed(ActionEvent e) {
 
 				// TODO Auto-generated method stub
+				JOptionPane.showMessageDialog(null, "Se mostran los empleados que son jefes", "Filtrar Jefes", JOptionPane.INFORMATION_MESSAGE);
 				filtroJefe();
 			}
 
@@ -150,6 +147,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				JOptionPane.showMessageDialog(null, "Se mostran los empleados con un salario mayor a 2400€, ", "Filtrar salario", JOptionPane.INFORMATION_MESSAGE);
 				try {
 					filtroSalario();
 				} catch (SQLException e1) {
@@ -462,7 +460,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			
+			WordProcessing();
 		}
 		
 	}
@@ -548,28 +546,28 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		}
 	}
 
-	public String fechaIng(String fechahora) {
-		String fechaIng = "", fecha = "", tiempo = "", anno = "", mes = "", dia = "", hora = "", minuto = "",
-				segundo = "";
-		StringTokenizer st = new StringTokenizer(fechahora.toString(), " ");
-		fecha = st.nextToken();
-		tiempo = st.nextToken();
-		st = new StringTokenizer(fecha.toString(), "-");
-		dia = st.nextToken();
-		mes = st.nextToken();
-		anno = st.nextToken();
-		st = new StringTokenizer(tiempo.toString(), ":");
-		hora = st.nextToken();
-		minuto = st.nextToken();
-		segundo = st.nextToken();
-		// no modifico el orden del tiempo pero lo almaceno por si fuese necesario en el
-		// futuro
-		fechaIng = anno + "-" + mes + "-" + dia + " " + tiempo;
-		return fechaIng;
+	
+	public void WordProcessing() {
+		// TODO Auto-generated method stub
+		gestorTabla();
+		
+		WordProcessing.createNewDocumentFromTemplate("info_empleado");
+		WordProcessing.typeTextAtBookmark("jefe", chb_jefe);
+		WordProcessing.exec();
+		try {
+			Process p = new ProcessBuilder("explorer.exe","/select","C:\\Users\\dam\\AppData\\Roaming\\Microsoft\\Templates").start();
+			
+		  }catch(IOException e) {e.printStackTrace();}
+		}
+	
+
+	private void gestorTabla() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public String fechaEsp(Timestamp fechahora) {
-		String fechaEsp = "", fecha = "", tiempo = "", anno = "", mes = "", dia = "", hora = "", minuto = "",
+		String fechaEsp = "", fecha = "", tiempo = "", dia="",mes="", anno="", hora = "", minuto = "",
 				segundo = "";
 		StringTokenizer st = new StringTokenizer(fechahora.toString(), " ");
 		fecha = st.nextToken();

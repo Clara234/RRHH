@@ -1,5 +1,7 @@
 package com.rrhh.auxiliares;
 
+import com.rrhh.auxiliares.WordProcessing;
+
 public class Auxiliar {
 
 	public static String dameContrasenna(char[] con) {
@@ -9,6 +11,7 @@ public class Auxiliar {
 		}
 		return contrasenna;
 	}
+	
 	
 	
 
