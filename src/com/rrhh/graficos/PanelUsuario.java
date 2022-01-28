@@ -20,6 +20,9 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -40,7 +43,7 @@ public class PanelUsuario extends JPanel  implements Servicios2{
 	Vector v;
 	Usuario usuario;
 	MisConexiones c;
-	
+	PreparedStatement ps;
 	JTable tabla;
 	JTextField tf_alias, tf_clave, tf_grupo;
 	List<Usuario> listaUsuarios;
@@ -48,11 +51,78 @@ public class PanelUsuario extends JPanel  implements Servicios2{
 	
 	public PanelUsuario(int ancho, int alto){
 		setLayout(new BorderLayout());
+		add(setMenuBar(alto,ancho),BorderLayout.NORTH);
 		add(setTabla(alto, ancho), BorderLayout.CENTER);
 		add(setPanelEste(alto,ancho, setPanelEsteDatos(alto,ancho), setPanelEsteControl(ancho,alto)), BorderLayout.EAST);
 		
 	}
 	
+	
+	public JMenuBar setMenuBar(int alto, int ancho) {
+		
+		JMenuBar menuBar = new JMenuBar();
+		JMenu menu = new JMenu("Filtros");
+		
+		JMenuItem filtroAdmi = new JMenuItem("Admi");
+		JMenuItem filtroUsu = new JMenuItem("Usuarios");
+		
+		filtroAdmi.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				filtroAdministradores();
+			}
+			
+		});
+		
+		filtroUsu.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
+		menu.add(filtroAdmi);
+		menu.add(filtroUsu);
+		menuBar.add(menu);
+		
+		return menuBar;
+		
+	}
+	
+	protected void filtroAdministradores() {
+		// TODO Auto-generated method stub
+		
+		dtm.setRowCount(0);
+		Usuario usuario;
+		try {
+			c = new MisConexiones();
+			listaUsuarios = new ArrayList<Usuario>();
+			ResultSet rs = c.getRS(ConfigDir.getInstance().getProperty("filtroAdmii"));
+			while (rs.next()) {
+				usuario = new Usuario(rs.getInt("id"),rs.getNString("alias"), rs.getNString("clave"),rs.getInt("grupo") );
+				v = new Vector();
+				v.addElement(usuario.getAlias());
+				v.addElement(usuario.getClave());
+				v.addElement(usuario.getGrupo());
+			
+				
+			
+				dtm.addRow(v);
+				listaUsuarios.add(usuario);
+			}
+			
+		}catch(Exception e) {e.printStackTrace();}
+		
+		
+		
+	}
+
+
 	public JScrollPane setTabla(int alto, int ancho) {
 		dtm = new DefaultTableModel();
 		
