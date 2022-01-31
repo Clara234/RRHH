@@ -14,15 +14,18 @@ import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.intellijthemes.FlatNordIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatArcDarkIJTheme;
+
 public class Lan {
 	
 	
 	public static void main(String[] args) {
 		setMarco();
 		try {
-		JFrame.setDefaultLookAndFeelDecorated(true);
-		JDialog.setDefaultLookAndFeelDecorated(true);
-		UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+		UIManager.setLookAndFeel(new FlatNordIJTheme());
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
