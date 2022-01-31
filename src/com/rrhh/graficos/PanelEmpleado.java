@@ -52,7 +52,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	JTextField tf_idDepartamento, tf_idPuesto, tf_nombre, tf_apellidos, tf_salario, tf_fecha_nacimiento, tf_grupo,tf_alias,tf_clave;
 	public JButton botonVer, botonInsertar, botonBorrar, botonActualizar,botonInforme, botonAcceder, botonFiltrar, botonAlta,botonFuera;// cambiar botonConexion=botonVer
     JMenuItem miCalculadora, miNavegador, miCopiaBase, informes, jefe, salarios;
-	JCheckBox chb_jefe, chb_root;
+	JCheckBox chb_jefe,chb_root;
 	List<Empleado> listaEmpleados;
 	public JDialog dialogoinicial, dialogoUsuario;
 	public JComboBox<Object> combo;
@@ -549,15 +549,36 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	
 	public void WordProcessing() {
 		// TODO Auto-generated method stub
-		gestorTabla();
 		
-		WordProcessing.createNewDocumentFromTemplate("info_empleado");
-		WordProcessing.typeTextAtBookmark("jefe", chb_jefe);
+
+		tf_nombre = new JTextField();
+		tf_apellidos = new JTextField();
+		tf_idDepartamento = new JTextField();
+		tf_idPuesto = new JTextField();
+		tf_salario = new JTextField();
+		tf_fecha_nacimiento = new JTextField();
+		tf_nombre.setText("" + seleccionado.getNombre());
+		tf_apellidos.setText("" + seleccionado.getApellido());
+		tf_idDepartamento.setText("" + seleccionado.getId_departamento());
+		tf_idPuesto.setText("" + seleccionado.getId_puesto());
+		tf_salario.setText("" + seleccionado.getSalario());
+		tf_fecha_nacimiento.setText("" + seleccionado.getFecha_nacimiento());
+		chb_jefe.setSelected(seleccionado.isJefe());
+		
+		
+		if(seleccionado != null) {
+		File miTemplate = new File("src/com/rrhh/auxiliares/templates/informeempleado.dotm");
+		WordProcessing.createNewDocumentFromTemplate(miTemplate.getAbsolutePath());
+		WordProcessing.typeTextAtBookmark("nombre", tf_nombre.getText());
+		WordProcessing.typeTextAtBookmark("apellidos", tf_apellidos.getText());
+		WordProcessing.typeTextAtBookmark("fecha", tf_fecha_nacimiento.getText());
+		WordProcessing.typeTextAtBookmark("idDep", tf_idDepartamento.getText());
+		WordProcessing.typeTextAtBookmark("idPuesto", tf_idPuesto.getText());
+		WordProcessing.typeTextAtBookmark("salario", tf_salario.getText());
+		WordProcessing.typeTextAtBookmark("jefe", ""+chb_jefe.isSelected());
+		WordProcessing.saveDocumentAsAndClose("dx");
 		WordProcessing.exec();
-		try {
-			Process p = new ProcessBuilder("explorer.exe","/select","C:\\Users\\dam\\AppData\\Roaming\\Microsoft\\Templates").start();
-			
-		  }catch(IOException e) {e.printStackTrace();}
+		}
 		}
 	
 
