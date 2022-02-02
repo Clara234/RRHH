@@ -2,33 +2,40 @@ package com.rrhh.graficos;
 
 import java.awt.Color;
 
+
+
+
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 
-import javax.swing.JDialog;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.intellijthemes.FlatNordIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatArcDarkIJTheme;
+
+
+
+import com.formdev.flatlaf.intellijthemes.FlatDraculaIJTheme;
+
 
 public class Lan {
 	
 	
 	public static void main(String[] args) {
-		setMarco();
 		try {
-		UIManager.setLookAndFeel(new FlatNordIJTheme());
-		}catch(Exception e) {
+			UIManager.setLookAndFeel(new FlatDraculaIJTheme());
+		} catch (UnsupportedLookAndFeelException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		setMarco();
+		
 		}
 
 	

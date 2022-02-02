@@ -7,5 +7,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/dam/eclipse-workspace/RRHH/lib/flatlaf-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dam/eclipse-workspace/RRHH/lib/flatlaf-intellij-themes-2.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

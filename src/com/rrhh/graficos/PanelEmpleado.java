@@ -8,7 +8,8 @@ import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import javax.swing.table.DefaultTableModel;
 
-
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialPalenightIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedDarkIJTheme;
 import com.rrhh.auxiliares.Auxiliar;
 import com.rrhh.auxiliares.WordProcessing;
 //import com.rrhh.auxiliares.CreaBackupTablas;
@@ -34,9 +35,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import java.util.Vector;
 import java.awt.*;
 
@@ -64,6 +62,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 
 	public PanelEmpleado(int ancho, int alto) {
 		// disposiciones de los objetos
+		
 		setLayout(new BorderLayout());
 		add(setMenuBar(alto, ancho), BorderLayout.NORTH);
 		add(setTabla(alto, ancho), BorderLayout.CENTER);
@@ -239,9 +238,10 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		JLabel l_idDepartamento = new JLabel("idDepartamento");
 		tf_idDepartamento = new JTextField();
 		tf_idDepartamento.setForeground(Color.gray);
+
 		Font f = new Font("Italic", Font.ITALIC, 12);
 		tf_idDepartamento.setFont(f);
-		tf_idDepartamento.setMaximumSize(new Dimension(250, 20));
+		tf_idDepartamento.setMaximumSize(new Dimension(200, 20));
 		JLabel l_idPuesto = new JLabel("idPuesto");
 		tf_idPuesto = new JTextField();
 		tf_idPuesto.setForeground(Color.gray);
@@ -267,15 +267,16 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		tf_salario.setFont(f5);
 		tf_salario.setMaximumSize(new Dimension(250, 20));
 		JLabel l_fecha_nacimiento = new JLabel("Fecha de nacimiento");
+		l_fecha_nacimiento.setLocation(l_fecha_nacimiento.CENTER,ancho);
 		tf_fecha_nacimiento = new JTextField();
 		tf_fecha_nacimiento.setForeground(Color.gray);
 		Font f6 = new Font("Italic", Font.ITALIC, 12);
 		tf_fecha_nacimiento.setFont(f6);
-		tf_fecha_nacimiento.setMaximumSize(new Dimension(250, 20));
-		JLabel l_jefe = new JLabel("Jefe");
-		l_jefe.setForeground(Color.black);
-		chb_jefe = new JCheckBox();
-		JLabel l_europa = new JLabel("Jefe");
+		tf_fecha_nacimiento.setMaximumSize(new Dimension(215, 20));
+		
+		chb_jefe = new JCheckBox("Jefe");
+		chb_jefe.setForeground(Color.gray);
+		
 		panelEsteDatos.add(l_idDepartamento);
 		panelEsteDatos.add(tf_idDepartamento);
 		panelEsteDatos.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -294,7 +295,6 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		panelEsteDatos.add(l_fecha_nacimiento);
 		panelEsteDatos.add(tf_fecha_nacimiento);
 		panelEsteDatos.add(Box.createRigidArea(new Dimension(0, 10)));
-		panelEsteDatos.add(l_jefe);
 		panelEsteDatos.add(chb_jefe);
 		panelEsteDatos.setPreferredSize(new Dimension((int) (ancho * 0.1), (int) (alto * 1.1)));
 
@@ -308,6 +308,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		panelEsteControl.setPreferredSize(new Dimension((int) (alto * 0.01), (int) (ancho * 0.01)));
 		botonVer = new JButton("Ver");
 		botonVer.setForeground(Color.blue);
+		botonVer.setMaximumSize(new Dimension(250, 30));
 		panelEsteControl.add(botonVer);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 		botonInsertar = new JButton("Insertar");
@@ -345,7 +346,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	public JPanel setPanelEste(int alto, int ancho, JPanel p1, JPanel p2) {
 		JPanel panelEste = new JPanel();
 		panelEste.setLayout(new BorderLayout());
-		panelEste.setPreferredSize(new Dimension((int) (ancho * 0.15), (int) (alto * 0.8)));
+		panelEste.setPreferredSize(new Dimension((int) (ancho * 0.25), (int) (alto * 0.8)));
 		panelEste.add(p1, BorderLayout.NORTH);
 		panelEste.add(p2, BorderLayout.CENTER);
 		return panelEste;
@@ -551,12 +552,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		// TODO Auto-generated method stub
 		
 
-		tf_nombre = new JTextField();
-		tf_apellidos = new JTextField();
-		tf_idDepartamento = new JTextField();
-		tf_idPuesto = new JTextField();
-		tf_salario = new JTextField();
-		tf_fecha_nacimiento = new JTextField();
+		
 		tf_nombre.setText("" + seleccionado.getNombre());
 		tf_apellidos.setText("" + seleccionado.getApellido());
 		tf_idDepartamento.setText("" + seleccionado.getId_departamento());
@@ -576,6 +572,9 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		WordProcessing.typeTextAtBookmark("idPuesto", tf_idPuesto.getText());
 		WordProcessing.typeTextAtBookmark("salario", tf_salario.getText());
 		WordProcessing.typeTextAtBookmark("jefe", ""+chb_jefe.isSelected());
+		if(chb_jefe.isSelected() == true) {
+		           WordProcessing.typeTextAtBookmark("jefe", "true");
+		}
 		WordProcessing.saveDocumentAsAndClose("dx");
 		WordProcessing.exec();
 		}

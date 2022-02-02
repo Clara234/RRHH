@@ -200,19 +200,19 @@ public class PanelUsuario extends JPanel  implements Servicios2{
 		panelEsteControl.setPreferredSize(new Dimension((int) (alto * 0.01), (int) (ancho * 0.01)));
 		
 		JButton botonVer = new JButton("Ver");
-		botonVer.setForeground(Color.BLUE);
+		botonVer.setBackground(Color.PINK);
 		panelEsteControl.add(botonVer);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 10)));
 		JButton botonInsertar = new JButton("Insertar");
-		botonInsertar.setForeground(Color.BLUE);
+		botonInsertar.setBackground(Color.PINK);
 		panelEsteControl.add(botonInsertar);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 10)));
 		JButton botonBorrar = new JButton("Borrar");
-		botonBorrar.setForeground(Color.BLUE);
+		botonBorrar.setBackground(Color.PINK);
 		panelEsteControl.add(botonBorrar);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 10)));
 		JButton botonActualizar = new JButton("Actualizar");
-		botonActualizar.setForeground(Color.BLUE);
+		botonActualizar.setBackground(Color.PINK);
 		panelEsteControl.add(botonActualizar);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 10)));
 		
