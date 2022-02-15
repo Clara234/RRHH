@@ -60,6 +60,7 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	public int grupo;
 	protected double salario;
 
+
 	public PanelEmpleado(int ancho, int alto) {
 		// disposiciones de los objetos
 		
@@ -886,7 +887,9 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 	    dialogoUsuario.add(botonFuera);
 	    
 	    JPanel panel = new JPanel();
+	    
 	    panel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
+	   
 
 	    panel.add(new JLabel("Introduzca su  alias"));
 	    panel.add(mialias);
@@ -900,14 +903,18 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		panel.add(botonFuera);
 
 		panel.setSize(250, 250);
-		panel.setBackground(new Color(209, 222, 244));
+		
+		//panel.setBackground(new Color(209, 222, 244));
 		dialogoUsuario.add(panel);
 		dialogoUsuario.setVisible(true);
 		panel.setVisible(true);
 	    
+	
 	    
-	    
+	  
 	}
+
+	
 
 	protected void filtroSalario() throws SQLException  {
 		// TODO Auto-generated method stub
