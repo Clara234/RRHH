@@ -114,6 +114,7 @@ public class PanelUsuario extends JPanel  implements Servicios2{
 			
 				dtm.addRow(v);
 				listaUsuarios.add(usuario);
+				System.out.println("Mostrando solo usuarios admi");
 			}
 			
 		}catch(Exception e) {e.printStackTrace();}
@@ -201,18 +202,22 @@ public class PanelUsuario extends JPanel  implements Servicios2{
 		
 		JButton botonVer = new JButton("Ver");
 		botonVer.setBackground(Color.PINK);
+		botonVer.setMaximumSize(new Dimension(250, 30));
 		panelEsteControl.add(botonVer);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 10)));
 		JButton botonInsertar = new JButton("Insertar");
 		botonInsertar.setBackground(Color.PINK);
+		botonInsertar.setMaximumSize(new Dimension(250, 30));
 		panelEsteControl.add(botonInsertar);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 10)));
 		JButton botonBorrar = new JButton("Borrar");
 		botonBorrar.setBackground(Color.PINK);
+		botonBorrar.setMaximumSize(new Dimension(250, 30));
 		panelEsteControl.add(botonBorrar);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 10)));
 		JButton botonActualizar = new JButton("Actualizar");
 		botonActualizar.setBackground(Color.PINK);
+		botonActualizar.setMaximumSize(new Dimension(250, 30));
 		panelEsteControl.add(botonActualizar);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 10)));
 		
@@ -342,6 +347,7 @@ public class PanelUsuario extends JPanel  implements Servicios2{
 
 	
 	public void refresh() {
+		
 		dtm.setRowCount(0);
 		Usuario usuario;
 	
@@ -351,7 +357,7 @@ public class PanelUsuario extends JPanel  implements Servicios2{
 			listaUsuarios = new ArrayList<Usuario>();
 			ResultSet rs = c.getRS(ConfigDir.getInstance().getProperty("query5"));
 			while (rs.next()) {
-				usuario = new Usuario(rs.getInt("id"),rs.getNString("alias"), rs.getNString("clave"),rs.getInt("grupo") );
+				usuario = new Usuario(rs.getInt("id"),rs.getString("alias"), rs.getString("clave"),rs.getInt("grupo") );
 				v = new Vector();
 				v.addElement(usuario.getAlias());
 				v.addElement(usuario.getClave());

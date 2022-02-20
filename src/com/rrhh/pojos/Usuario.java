@@ -2,9 +2,7 @@ package com.rrhh.pojos;
 
 public class Usuario {
 
-	private String alias;
-
-	private String clave;
+	private String alias, clave;
 	private int grupo,id;
 
 	public Usuario(int id,String alias, String clave, int grupo ) {

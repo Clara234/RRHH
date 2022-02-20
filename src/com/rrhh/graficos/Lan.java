@@ -5,6 +5,7 @@ import java.awt.Color;
 
 
 
+
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -21,7 +22,7 @@ import javax.swing.WindowConstants;
 
 
 
-import com.formdev.flatlaf.intellijthemes.FlatDraculaIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatSolarizedLightIJTheme;
 
 
 public class Lan {
@@ -29,7 +30,7 @@ public class Lan {
 	
 	public static void main(String[] args) {
 		try {
-			UIManager.setLookAndFeel(new FlatDraculaIJTheme());
+			UIManager.setLookAndFeel(new FlatSolarizedLightIJTheme());
 		} catch (UnsupportedLookAndFeelException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

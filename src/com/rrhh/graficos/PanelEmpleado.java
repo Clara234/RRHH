@@ -26,6 +26,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -314,23 +317,28 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 		botonInsertar = new JButton("Insertar");
 		botonInsertar.setForeground(Color.blue);
+		botonInsertar.setMaximumSize(new Dimension(250, 30));
 		panelEsteControl.add(botonInsertar);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 		botonBorrar = new JButton("Borrar");
 		botonBorrar.setForeground(Color.blue);
+		botonBorrar.setMaximumSize(new Dimension(250, 30));
 		panelEsteControl.add(botonBorrar);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 		botonActualizar = new JButton("Actualizar");
 		botonActualizar.setForeground(Color.blue);
+		botonActualizar.setMaximumSize(new Dimension(250, 30));
 		panelEsteControl.add(botonActualizar);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 		botonInforme = new JButton("Informe");
 		botonInforme.setForeground(Color.blue);
+		botonInforme.setMaximumSize(new Dimension(250, 30));
 		panelEsteControl.add(botonInforme);
 		panelEsteControl.add(Box.createRigidArea(new Dimension(0, 05)));
 
 		chb_root = new JCheckBox("InicioSesion");
 		chb_root.setForeground(Color.BLUE);
+		chb_root.setMaximumSize(new Dimension(250, 30));
 		chb_root.addActionListener(new gestorEdicion());
 
 		botonInsertar.addActionListener(new gestorInsertar());
@@ -576,17 +584,38 @@ public class PanelEmpleado<Reproductor> extends JPanel implements Servicios {
 		if(chb_jefe.isSelected() == true) {
 		           WordProcessing.typeTextAtBookmark("jefe", "true");
 		}
-		WordProcessing.saveDocumentAsAndClose("dx");
+		
+		String nombreEmpleado = tf_nombre.getText();
+		CreaCarpetaInformes(nombreEmpleado);
+		
+		WordProcessing.changeDocumentDirectory(
+				System.getProperty("user.home") + "\\documents\\Informes_empleados\\" +nombreEmpleado);
+		WordProcessing.saveDocumentAs(nombreEmpleado);
 		WordProcessing.exec();
 		}
 		}
 	
+	private void CreaCarpetaInformes(String nombreEmpleado) {
+		String fileName = System.getProperty("user.home") + "\\documents\\Informes_empleados\\" +nombreEmpleado ;
 
-	private void gestorTabla() {
-		// TODO Auto-generated method stub
-		
+		Path path = Paths.get(fileName);
+
+		if (!Files.exists(path)) {
+			try {
+				Files.createDirectory(path);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("New Directory created !   " + fileName);
+		} else {
+
+			System.out.println("Directory already exists");
+		}
 	}
+	
 
+	
 	public String fechaEsp(Timestamp fechahora) {
 		String fechaEsp = "", fecha = "", tiempo = "", dia="",mes="", anno="", hora = "", minuto = "",
 				segundo = "";
